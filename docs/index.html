@@ -1,0 +1,72 @@
+<!doctype html>
+<html lang="zh-Hant">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width,initial-scale=1">
+  <title>UTUVO Explain｜貓貓翻譯家</title>
+  <meta name="description" content="選字按 ⌥D 看白話解釋，按 ⌥⇧D 翻譯。UTUVO Explain 是一款原生 Mac 小工具，支援台灣繁體中文，由你自己的 Gemini API Key 驅動。">
+  <meta property="og:type" content="website">
+  <meta property="og:locale" content="zh_TW">
+  <meta property="og:title" content="UTUVO Explain｜貓貓翻譯家">
+  <meta property="og:description" content="選字，按一下。讀懂文字，就留在原本的地方。">
+  <meta property="og:image" content="https://mickyyang-1407.github.io/utuvo-explain/assets/explain-app.webp">
+  <meta property="og:url" content="https://mickyyang-1407.github.io/utuvo-explain/">
+  <meta name="twitter:card" content="summary_large_image">
+  <link rel="canonical" href="https://mickyyang-1407.github.io/utuvo-explain/">
+  <link rel="alternate" hreflang="en" href="https://mickyyang-1407.github.io/utuvo-explain/en.html">
+  <link rel="alternate" hreflang="zh-Hant" href="https://mickyyang-1407.github.io/utuvo-explain/">
+  <link rel="icon" type="image/webp" href="assets/cat-160.webp">
+  <link rel="stylesheet" href="styles.css">
+</head>
+<body>
+  <header class="top"><nav class="nav wrap" aria-label="主要導覽">
+    <a class="brand" href="#top"><img src="assets/cat-160.webp" width="38" height="38" alt="">UTUVO / EXPLAIN</a>
+    <div class="navlinks"><a class="optional" href="#how">怎麼用</a><a href="https://github.com/mickyyang-1407/utuvo-explain/releases/latest">下載</a><a class="optional" href="https://github.com/mickyyang-1407/utuvo-explain">GitHub ↗</a><a class="lang" href="en.html" lang="en">EN</a></div>
+  </nav></header>
+  <main id="top"><div class="wrap">
+    <section class="hero" aria-labelledby="hero-title">
+      <div class="hero-copy">
+        <div class="kicker">貓貓翻譯家 · MAC 小工具</div>
+        <h1 id="hero-title">選一段字。<br>就地看懂。</h1>
+        <p class="lead">不用開新分頁，把正在看的句子帶進一個小視窗。白話解釋意思，或直接翻譯成你要讀的語言。</p>
+        <div class="actions"><a class="button" href="https://github.com/mickyyang-1407/utuvo-explain/releases/latest">免費下載 <span aria-hidden="true">↓</span></a><a class="link" href="https://github.com/mickyyang-1407/utuvo-explain">查看原始碼 ↗</a></div>
+        <p class="small">v0.1.0 · macOS 14+ · Apple Silicon<br>Developer ID 簽章、Apple 公證。需自備 Gemini API Key 與網路連線。</p>
+      </div>
+      <figure class="hero-visual">
+        <img class="hero-cat" src="assets/cat-512.webp" width="102" height="102" alt="UTUVO 系列橘白貓咪圖示" decoding="async">
+        <img class="hero-shot" src="assets/explain-app.webp" width="1064" height="1088" alt="UTUVO Explain 的實際視窗，將 WebAssembly 英文句子說明成台灣繁體中文" fetchpriority="high" loading="eager" decoding="async">
+        <figcaption>真實 App 畫面 · 示範文字</figcaption>
+      </figure>
+    </section>
+    <div class="facts" aria-label="產品摘要"><div><span>兩個動作</span><strong>白話解釋／翻譯</strong></div><div><span>真正的 MAC APP</span><strong>SwiftUI + AppKit</strong></div><div><span>你的選擇</span><strong>MIT 開源 · 自備 API Key</strong></div></div>
+    <section id="how" class="section" aria-labelledby="how-title">
+      <div class="section-head"><div><span class="eyebrow">01 / HOW IT WORKS</span><h2 id="how-title">閱讀不用<br>一直跳出去。</h2></div><p>從選字到結果只要一步；遇到不支援讀取選字的 App，也可以手動貼進視窗。</p></div>
+      <div class="workflow">
+        <article class="step"><span class="num">01</span><h3>選取文字</h3><p>在瀏覽器或其他 Mac App 選一段想理解的內容。</p></article>
+        <article class="step"><span class="num">02</span><h3>按快捷鍵</h3><p><span class="key">⌥D</span> 白話解釋；<span class="key">⌥⇧D</span> 直接翻譯。也能在視窗內切換。</p></article>
+        <article class="step"><span class="num">03</span><h3>在附近讀結果</h3><p>小視窗盡量靠近選字，解釋看完就能接著閱讀。</p></article>
+      </div>
+    </section>
+  </div>
+  <section class="modes" aria-labelledby="modes-title"><div class="wrap section">
+    <div class="section-head"><div><span class="eyebrow">02 / TWO WAYS TO READ</span><h2 id="modes-title">想弄懂，或想翻譯。</h2></div><p>兩個模式分開處理，結果清楚標示目前是哪一種。</p></div>
+    <div class="mode-grid">
+      <article class="mode"><span class="eyebrow">⌥D</span><h3>白話解釋</h3><p>用台灣繁體中文說明句子的意思，必要時補上術語與背景。</p><img src="assets/explain-app.webp" width="1064" height="1088" loading="lazy" decoding="async" alt="白話解釋模式的真實 App 截圖"></article>
+      <article class="mode"><span class="eyebrow">⌥⇧D</span><h3>翻譯</h3><p>非中文翻成台灣繁體中文；中文翻成英文。結果只保留譯文。</p><img src="assets/translate-app.webp" width="1064" height="1088" loading="lazy" decoding="async" alt="翻譯模式的真實 App 截圖"></article>
+    </div>
+  </div></section>
+  <div class="wrap">
+    <section class="section privacy" aria-labelledby="privacy-title">
+      <div><span class="eyebrow">03 / YOUR SETUP</span><h2 id="privacy-title">你的 Key。<br>你的節奏。</h2><p>UTUVO Explain 不要求建立新帳號。你在設定中加入自己的 Gemini API Key，App 只在你觸發解釋或翻譯時，把該段文字送往 Google。免費額度與資料使用規則由 Google 決定。</p></div>
+      <ul><li><strong>Key 留在 Mac 鑰匙圈</strong>不寫進原始碼，也不放進翻譯紀錄。</li><li><strong>首次需要 macOS 權限</strong>用來取得目前選字並辨識快捷鍵；目標 App 無法提供選字時，可手動貼上。</li><li><strong>沒有歷史清單</strong>App 不保存解釋與翻譯紀錄；原文送出前請自行確認是否適合交給 Gemini 處理。</li></ul>
+    </section>
+    <section class="faq" aria-labelledby="faq-title"><span class="eyebrow">GOOD TO KNOW</span><h2 id="faq-title">開始前，先說清楚。</h2>
+      <details><summary>這個 App 完全免費嗎？</summary><p>App 免費且 MIT 開源。你需要自己的 Gemini API Key；Google 的免費額度、速率限制與資料使用規則可能調整，請以 <a class="link" href="https://ai.google.dev/gemini-api/docs/pricing">Google 官方說明</a>為準。</p></details>
+      <details><summary>為什麼需要「裝置控制和資料取用」權限？</summary><p>App 透過 macOS 輔助使用機制取得當下選取的文字，也需要辨識全域快捷鍵。它不會記錄按鍵；如果個別 App 不提供選字，可以直接在 Explain 視窗貼上文字。</p></details>
+      <details><summary>支援哪些 Mac？</summary><p>目前提供 macOS 14 以上、Apple Silicon 的安裝包。原始碼可以自行編譯；Intel Mac 尚未驗證。</p></details>
+    </section>
+    <section class="closing"><div><span class="eyebrow">SMALL TOOL. CLEAR WORDS.</span><h2>下一段，看懂就好。</h2><p>從選字開始，把閱讀留在原本的地方。</p></div><a class="button" href="https://github.com/mickyyang-1407/utuvo-explain/releases/latest">下載 UTUVO Explain ↓</a></section>
+  </div></main>
+  <footer class="footer wrap"><span>© 2026 UTUVO · Explain 0.1.0</span><div><a href="https://github.com/mickyyang-1407/utuvo-explain/blob/main/LICENSE">MIT</a><a href="https://github.com/mickyyang-1407/utuvo-explain/blob/main/README.md">使用說明</a><a href="en.html" lang="en">English</a></div></footer>
+</body>
+</html>
