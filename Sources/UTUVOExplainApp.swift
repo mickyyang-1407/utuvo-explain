@@ -89,8 +89,13 @@ import SwiftUI
                 if event.getIntegerValueField(.keyboardEventAutorepeat) != 0 {
                     return nil
                 }
+                let shiftDown = flags.contains(.maskShift)
+                    || CGEventSource.flagsState(.hidSystemState).contains(.maskShift)
+                    || CGEventSource.flagsState(.combinedSessionState).contains(.maskShift)
+                    || CGEventSource.keyState(.hidSystemState, key: CGKeyCode(kVK_Shift))
+                    || CGEventSource.keyState(.hidSystemState, key: CGKeyCode(kVK_RightShift))
                 MainActor.assumeIsolated {
-                    owner.handleHotKey(flags.contains(.maskShift) ? .translate : .explain)
+                    owner.handleHotKey(shiftDown ? .translate : .explain)
                 }
                 return nil
             },
