@@ -19,7 +19,7 @@ The compact window tries to appear near your selected text. You can also paste t
 
 ## Install
 
-1. Download `UTUVO-Explain-0.1.0-arm64.dmg` from [Releases](https://github.com/mickyyang-1407/utuvo-explain/releases/latest) and drag the app into Applications. The installer is Developer ID signed and Apple notarized.
+1. Download `UTUVO-Explain-0.1.1-arm64.dmg` from [Releases](https://github.com/mickyyang-1407/utuvo-explain/releases/latest) and drag the app into Applications. The installer is Developer ID signed and Apple notarized.
 2. Launch UTUVO Explain and add your own [Gemini API key](https://aistudio.google.com/api-keys) in Settings. It stays in macOS Keychain.
 3. Allow UTUVO Explain under macOS “Device Control and Data Access” when prompted. The app uses this access to read the current selection and recognize global shortcuts; it does not record other keystrokes.
 4. Select text and press a shortcut, or paste text into the window.

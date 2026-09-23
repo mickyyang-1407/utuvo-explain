@@ -19,7 +19,7 @@
 
 ## 安裝與設定
 
-1. 從 [Releases](https://github.com/mickyyang-1407/utuvo-explain/releases/latest) 下載 `UTUVO-Explain-0.1.0-arm64.dmg`。開啟後，將 App 拖進「Applications」。安裝包已通過 Apple 簽章與公證。
+1. 從 [Releases](https://github.com/mickyyang-1407/utuvo-explain/releases/latest) 下載 `UTUVO-Explain-0.1.1-arm64.dmg`。開啟後，將 App 拖進「Applications」。安裝包已通過 Apple 簽章與公證。
 2. 從「應用程式」啟動 UTUVO Explain。點右上角的設定，貼上自己的 [Gemini API Key](https://aistudio.google.com/api-keys)。API Key 會存在 Mac 鑰匙圈。
 3. 第一次使用時，在 macOS 的「裝置控制和資料取用」中允許 UTUVO Explain。App 需要這項權限才能讀取選字、接收快捷鍵；不會記錄其他按鍵。
 4. 選字後按快捷鍵，或在小視窗手動貼上文字。

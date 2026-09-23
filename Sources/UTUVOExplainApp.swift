@@ -39,8 +39,7 @@ import SwiftUI
 
     private func setupMenu() {
         let item = NSStatusBar.system.statusItem(withLength: NSStatusItem.squareLength)
-        // Drop uses the same quiet cat mark in the menu bar; keep the family consistent.
-        item.button?.image = NSImage(systemSymbolName: "cat.fill", accessibilityDescription: "UTUVO Explain・貓貓翻譯家")
+        item.button?.image = MenuBarIcon.make()
         item.button?.toolTip = "UTUVO Explain・貓貓翻譯家"
         let menu = NSMenu()
         let title = NSMenuItem(title: "UTUVO Explain・貓貓翻譯家", action: nil, keyEquivalent: "")
