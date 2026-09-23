@@ -85,7 +85,7 @@ struct MainView: View {
                     .lineLimit(2)
                 Spacer()
                 if !model.hasAccessibility {
-                    Button("啟用快捷鍵", action: onPermission)
+                    Button("開啟系統設定", action: onPermission)
                         .font(.caption)
                 } else if !model.hasKey {
                     Button("設定 Key", action: onSettings)

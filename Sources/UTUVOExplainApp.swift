@@ -166,8 +166,7 @@ import SwiftUI
             model.statusText = "沒有讀到選取文字；可以貼上文字後按「白話解釋」或「翻譯」。"
         case .permissionNeeded:
             showPanel()
-            model.statusText = "請先在系統設定允許 UTUVO Explain，再重試。"
-            SelectionReader.requestPermission()
+            model.statusText = "請按「開啟系統設定」，允許 UTUVO Explain 後再重試。"
         }
     }
 
@@ -223,9 +222,15 @@ import SwiftUI
     }
 
     private func requestAccessibility() {
-        SelectionReader.requestPermission()
+        guard let settingsURL = URL(string: "x-apple.systempreferences:com.apple.preference.security?Privacy_Accessibility") else {
+            model.statusText = "請在系統設定的「裝置控制和資料取用」開啟 UTUVO Explain。"
+            return
+        }
+        let opened = NSWorkspace.shared.open(settingsURL)
         model.refreshAccessibilityStatus()
-        model.statusText = "在「裝置控制和資料取用」開啟 UTUVO Explain，回來後就能按 ⌥D。"
+        model.statusText = opened
+            ? "在「裝置控制和資料取用」開啟 UTUVO Explain，回來後就能按 ⌥D。"
+            : "請在系統設定的「裝置控制和資料取用」開啟 UTUVO Explain。"
     }
 
     func windowWillClose(_ notification: Notification) {

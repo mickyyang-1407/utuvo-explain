@@ -20,9 +20,4 @@ enum SelectionReader {
         let trimmed = text.trimmingCharacters(in: .whitespacesAndNewlines)
         return trimmed.isEmpty ? .noSelection : .text(trimmed)
     }
-
-    static func requestPermission() {
-        let options = ["AXTrustedCheckOptionPrompt": true] as CFDictionary
-        _ = AXIsProcessTrustedWithOptions(options)
-    }
 }
