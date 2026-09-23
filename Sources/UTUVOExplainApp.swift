@@ -161,15 +161,19 @@ import SwiftUI
     }
 
     private func handleHotKey(_ mode: ExplainMode) {
+        let isAppFrontmost = NSWorkspace.shared.frontmostApplication?.processIdentifier == ProcessInfo.processInfo.processIdentifier
         switch SelectionReader.read() {
         case .text(let selection):
             showPanel(near: selection.bounds)
             model.prepare(selection.text, mode: mode)
         case .noSelection:
             showPanel()
-            model.mode = mode
-            if model.sourceText.isEmpty && model.resultText.isEmpty {
-                model.statusText = "沒有讀到選取文字；可以貼上文字後按「白話解釋」或「翻譯」。"
+            if isAppFrontmost && !model.sourceText.isEmpty {
+                // The panel owns focus after the first shortcut. Reuse its text when the
+                // user switches modes with a second shortcut.
+                model.prepare(model.sourceText, mode: mode)
+            } else {
+                model.showNoSelection(mode: mode)
             }
         case .permissionNeeded:
             showPanel()

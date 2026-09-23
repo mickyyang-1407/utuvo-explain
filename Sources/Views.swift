@@ -69,6 +69,10 @@ struct MainView: View {
 
             Divider()
 
+            Text(model.mode.rawValue)
+                .font(.caption.weight(.semibold))
+                .foregroundStyle(.secondary)
+
             ScrollView {
                 Text(model.resultText.isEmpty ? (model.isLoading ? "Gemini 正在處理…" : "結果會顯示在這裡") : model.resultText)
                     .foregroundStyle(model.resultText.isEmpty ? .secondary : .primary)

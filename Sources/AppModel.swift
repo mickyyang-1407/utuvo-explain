@@ -23,6 +23,14 @@ import Observation
         run()
     }
 
+    func showNoSelection(mode: ExplainMode) {
+        currentTask?.cancel()
+        self.mode = mode
+        resultText = ""
+        isLoading = false
+        statusText = "沒有讀到選取文字；可以貼上文字後按「白話解釋」或「翻譯」。"
+    }
+
     func run() {
         let text = sourceText.trimmingCharacters(in: .whitespacesAndNewlines)
         guard !text.isEmpty else {
