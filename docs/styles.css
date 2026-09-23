@@ -20,6 +20,7 @@ a:focus-visible,summary:focus-visible{outline:3px solid var(--violet);outline-of
 .kicker:before{content:"";width:26px;height:1px;background:var(--violet)}
 h1,h2,h3,p{margin-top:0}
 h1{font-size:clamp(52px,6.2vw,84px);font-weight:650;letter-spacing:-.07em;line-height:1.12;margin:25px 0 26px}
+html[lang="zh-Hant"] h1{font-size:clamp(46px,5.9vw,78px)}
 .lead{font-size:19px;line-height:1.9;color:var(--muted);max-width:470px;margin-bottom:28px}
 .actions{display:flex;align-items:center;gap:24px;flex-wrap:wrap}
 .button{display:inline-flex;align-items:center;justify-content:center;gap:24px;background:var(--ink);color:white;border-radius:9px;padding:16px 22px;font-size:15px;font-weight:670;min-height:52px}

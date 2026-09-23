@@ -1,16 +1,16 @@
 # Facebook 發布文案
 
-選一段字，就地看懂。🐈
+我做了一個 Mac 選字工具：**UTUVO Explain（貓貓翻譯家）** 🐈
 
-最近做了一個 Mac 小工具 **UTUVO Explain｜貓貓翻譯家**。在瀏覽器或其他 App 選字後，按 **⌥D**，它會用台灣繁體中文講清楚這段話的意思；按 **⌥⇧D**，就直接翻譯。小視窗會盡量出現在選字附近，不用一直切換分頁。
+在網頁或其他 App 看到不熟的文字，選取後按 **⌥D**，它會用台灣繁體中文說明這段話的意思。只想看翻譯，就按 **⌥⇧D**。結果視窗會盡量出現在選字旁邊，不用先複製到翻譯網站。
 
-這隻貓沿用 UTUVO Paw、Drop 的橘白貓咪系列。App 是原生 SwiftUI／AppKit，免費、MIT 開源；安裝包已完成 Apple 簽章與公證。
+這次沿用 Paw、Drop 那隻橘白貓。App 免費、MIT 開源，下載的 DMG 已完成 Apple 簽章與公證。
 
-使用時要填入你自己的 Gemini API Key。Key 存在 Mac 鑰匙圈，只有你按快捷鍵或按下功能按鈕時，選取文字才會送到 Google。Gemini 免費額度與資料使用規則依 Google 官方公告，敏感內容請不要送出。
+使用時需要自己的 Gemini API Key。Key 會存在 Mac 鑰匙圈；只有按下快捷鍵或功能按鈕時，文字才會送到 Google。請不要送出敏感內容。Gemini 的免費額度與資料使用規則，請以 Google 官方說明為準。
 
-目前提供 **macOS 14+、Apple Silicon** 版本。第一次使用需在 macOS 開啟選字／快捷鍵所需權限；如果個別 App 讀不到選字，也能直接貼進視窗。
+目前提供 **macOS 14 以上、Apple Silicon Mac** 版本。第一次使用需要開啟 Mac 的選字與快捷鍵權限；如果某個 App 抓不到選字，也能手動貼上。
 
 網站與下載：https://mickyyang-1407.github.io/utuvo-explain/
 原始碼：https://github.com/mickyyang-1407/utuvo-explain
 
-#UTUVO #MacApp #開源 #翻譯工具 #貓貓翻譯家
+#UTUVO #MacApp #貓貓翻譯家
