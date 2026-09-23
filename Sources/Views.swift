@@ -4,17 +4,15 @@ import SwiftUI
 struct MainView: View {
     @Bindable var model: AppModel
     let onSettings: () -> Void
+    let onPermission: () -> Void
 
     var body: some View {
-        VStack(alignment: .leading, spacing: 16) {
+        VStack(alignment: .leading, spacing: 12) {
             HStack(spacing: 10) {
                 Image(systemName: "text.book.closed.fill")
-                    .font(.title2)
+                    .font(.title3)
                     .foregroundStyle(.tint)
-                VStack(alignment: .leading, spacing: 2) {
-                    Text("Micky Explain").font(.headline)
-                    Text("選字，一鍵看懂").font(.caption).foregroundStyle(.secondary)
-                }
+                Text("UTUVO Explain").font(.headline)
                 Spacer()
                 Button(action: onSettings) {
                     Image(systemName: "gearshape")
@@ -22,50 +20,62 @@ struct MainView: View {
                 .help("設定 Gemini API Key 與提示詞")
             }
 
-            Picker("功能", selection: $model.mode) {
-                ForEach(ExplainMode.allCases) { mode in
-                    Text(mode.rawValue).tag(mode)
-                }
-            }
-            .pickerStyle(.segmented)
-            .labelsHidden()
-
-            VStack(alignment: .leading, spacing: 6) {
-                Text("原文").font(.caption).foregroundStyle(.secondary)
+            if model.isEditingSource {
                 TextEditor(text: $model.sourceText)
                     .font(.body)
                     .scrollContentBackground(.hidden)
                     .padding(8)
-                    .frame(minHeight: 90, maxHeight: 120)
+                    .frame(height: 75)
                     .background(.quaternary.opacity(0.35), in: RoundedRectangle(cornerRadius: 10))
+            } else if model.sourceText.isEmpty {
+                VStack(alignment: .leading, spacing: 8) {
+                    Text("選取文字，按 ⌥D")
+                        .font(.title3.weight(.semibold))
+                    Text("想直接翻譯，就按 ⌥⇧D。")
+                        .foregroundStyle(.secondary)
+                    Button("或在這裡貼上文字") { model.isEditingSource = true }
+                }
+                .frame(maxWidth: .infinity, minHeight: 75, alignment: .leading)
+            } else {
+                HStack(alignment: .top) {
+                    Text(model.sourceText)
+                        .lineLimit(2)
+                        .frame(maxWidth: .infinity, alignment: .leading)
+                    Button("編輯") { model.isEditingSource = true }
+                        .font(.caption)
+                }
+                .padding(10)
+                .frame(maxWidth: .infinity, minHeight: 75, alignment: .topLeading)
+                .background(.quaternary.opacity(0.35), in: RoundedRectangle(cornerRadius: 10))
             }
 
-            HStack {
-                Text("⌥D 解釋  ·  ⌥⇧D 翻譯")
-                    .font(.caption)
-                    .foregroundStyle(.secondary)
+            HStack(spacing: 8) {
+                Button("白話解釋") {
+                    model.mode = .explain
+                    model.run()
+                }
+                .buttonStyle(.borderedProminent)
+                Button("翻譯") {
+                    model.mode = .translate
+                    model.run()
+                }
+                .buttonStyle(.bordered)
                 Spacer()
-                Button("開始") { model.run() }
-                    .buttonStyle(.borderedProminent)
-                    .keyboardShortcut(.return, modifiers: .command)
+                if !model.resultText.isEmpty {
+                    Button("複製結果") { model.copyResult() }
+                }
             }
+            .disabled(model.sourceText.trimmingCharacters(in: .whitespacesAndNewlines).isEmpty)
 
             Divider()
 
-            HStack {
-                Text(model.mode.rawValue).font(.headline)
-                Spacer()
-                if !model.resultText.isEmpty {
-                    Button("複製") { model.copyResult() }
-                }
-            }
             ScrollView {
-                Text(model.resultText.isEmpty ? (model.isLoading ? "正在思考…" : "結果會顯示在這裡") : model.resultText)
+                Text(model.resultText.isEmpty ? (model.isLoading ? "Gemini 正在處理…" : "結果會顯示在這裡") : model.resultText)
                     .foregroundStyle(model.resultText.isEmpty ? .secondary : .primary)
                     .textSelection(.enabled)
                     .frame(maxWidth: .infinity, alignment: .leading)
             }
-            .frame(minHeight: 105)
+            .frame(maxWidth: .infinity, maxHeight: .infinity)
 
             HStack(spacing: 8) {
                 if model.isLoading { ProgressView().controlSize(.small) }
@@ -74,14 +84,17 @@ struct MainView: View {
                     .foregroundStyle(model.statusText == "完成" ? .secondary : .primary)
                     .lineLimit(2)
                 Spacer()
-                if !model.hasKey {
+                if !model.hasAccessibility {
+                    Button("啟用快捷鍵", action: onPermission)
+                        .font(.caption)
+                } else if !model.hasKey {
                     Button("設定 Key", action: onSettings)
                         .font(.caption)
                 }
             }
         }
-        .padding(20)
-        .frame(width: 480, height: 485)
+        .padding(16)
+        .frame(width: 420, height: 360)
     }
 }
 
@@ -113,7 +126,7 @@ struct SettingsView: View {
                     SecureField("貼上 API Key", text: $keyDraft)
                         .textFieldStyle(.roundedBorder)
                     Link("開啟 Google AI Studio", destination: URL(string: "https://aistudio.google.com/api-keys")!)
-                    Text("只有你按快捷鍵或「開始」時，選取文字才會送往 Gemini。免費層級的內容可能被 Google 用於改進產品。")
+                    Text("只有你按快捷鍵或功能按鈕時，文字才會送往 Gemini。免費層級的內容可能被 Google 用於改進產品。")
                         .font(.caption).foregroundStyle(.secondary)
                 }
 
@@ -150,7 +163,7 @@ struct SettingsView: View {
             }
             .padding(22)
         }
-        .frame(width: 510, height: 565)
+        .frame(width: 510, height: 380)
     }
 
     private func save() {

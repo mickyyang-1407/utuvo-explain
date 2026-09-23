@@ -1,4 +1,5 @@
 import AppKit
+import ApplicationServices
 import Foundation
 import Observation
 
@@ -8,7 +9,9 @@ import Observation
     var statusText = "選取文字後按 ⌥D，就能看白話解釋。"
     var mode: ExplainMode = .explain
     var isLoading = false
+    var isEditingSource = false
     var hasKey = KeychainStore.read() != nil
+    var hasAccessibility = AXIsProcessTrusted()
 
     @ObservationIgnored private var currentTask: Task<Void, Never>?
 
@@ -16,6 +19,7 @@ import Observation
         self.mode = mode
         sourceText = text
         resultText = ""
+        isEditingSource = false
         run()
     }
 
@@ -64,5 +68,9 @@ import Observation
 
     func refreshKeyStatus() {
         hasKey = KeychainStore.read() != nil
+    }
+
+    func refreshAccessibilityStatus() {
+        hasAccessibility = AXIsProcessTrusted()
     }
 }

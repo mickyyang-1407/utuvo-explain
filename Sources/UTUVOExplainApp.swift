@@ -1,9 +1,10 @@
 import AppKit
 import ApplicationServices
 import Carbon
+import CoreGraphics
 import SwiftUI
 
-@main struct MickyExplainApp: App {
+@main struct UTUVOExplainApp: App {
     @NSApplicationDelegateAdaptor(AppDelegate.self) private var delegate
 
     var body: some Scene {
@@ -20,18 +21,27 @@ import SwiftUI
     private var settingsWindow: NSWindow?
     private var hotKeys: [EventHotKeyRef] = []
     private var handler: EventHandlerRef?
+    private var eventTap: CFMachPort?
+    private var eventTapSource: CFRunLoopSource?
+    private var tapUpgradeTask: Task<Void, Never>?
 
     func applicationDidFinishLaunching(_ notification: Notification) {
         setupMenu()
-        registerHotKeys()
+        if !installEventTap() {
+            registerHotKeys()
+            if !AXIsProcessTrusted() {
+                model.statusText = "尚未取得輔助使用權限；請在系統設定允許 UTUVO Explain。"
+            }
+            startTapUpgrade()
+        }
         showPanel()
     }
 
     private func setupMenu() {
         let item = NSStatusBar.system.statusItem(withLength: NSStatusItem.squareLength)
-        item.button?.image = NSImage(systemSymbolName: "text.book.closed", accessibilityDescription: "Micky Explain")
+        item.button?.image = NSImage(systemSymbolName: "text.book.closed", accessibilityDescription: "UTUVO Explain")
         let menu = NSMenu()
-        let open = NSMenuItem(title: "開啟 Micky Explain", action: #selector(openPanel), keyEquivalent: "")
+        let open = NSMenuItem(title: "開啟 UTUVO Explain", action: #selector(openPanel), keyEquivalent: "")
         open.target = self
         menu.addItem(open)
         let settings = NSMenuItem(title: "設定…", action: #selector(openSettings), keyEquivalent: "")
@@ -45,6 +55,77 @@ import SwiftUI
         statusItem = item
     }
 
+    private func installEventTap() -> Bool {
+        guard eventTap == nil, AXIsProcessTrusted() else { return false }
+        model.hasAccessibility = true
+        let mask = CGEventMask(1 << CGEventType.keyDown.rawValue)
+        let pointer = Unmanaged.passUnretained(self).toOpaque()
+        guard let tap = CGEvent.tapCreate(
+            tap: .cgSessionEventTap,
+            place: .headInsertEventTap,
+            options: .defaultTap,
+            eventsOfInterest: mask,
+            callback: { _, type, event, userData in
+                guard let userData else { return Unmanaged.passUnretained(event) }
+                let owner = Unmanaged<AppDelegate>.fromOpaque(userData).takeUnretainedValue()
+                if type == .tapDisabledByTimeout || type == .tapDisabledByUserInput {
+                    MainActor.assumeIsolated {
+                        if let tap = owner.eventTap { CGEvent.tapEnable(tap: tap, enable: true) }
+                    }
+                    return Unmanaged.passUnretained(event)
+                }
+                guard type == .keyDown,
+                      event.getIntegerValueField(.keyboardEventKeycode) == Int64(kVK_ANSI_D) else {
+                    return Unmanaged.passUnretained(event)
+                }
+                let flags = event.flags
+                guard flags.contains(.maskAlternate),
+                      !flags.contains(.maskCommand),
+                      !flags.contains(.maskControl) else {
+                    return Unmanaged.passUnretained(event)
+                }
+                MainActor.assumeIsolated {
+                    owner.handleHotKey(flags.contains(.maskShift) ? .translate : .explain)
+                }
+                return nil
+            },
+            userInfo: pointer
+        ) else {
+            model.statusText = "快捷鍵尚未就緒。請確認「輔助使用」權限，並重新開啟 App。"
+            return false
+        }
+        guard let source = CFMachPortCreateRunLoopSource(kCFAllocatorDefault, tap, 0) else {
+            return false
+        }
+        CFRunLoopAddSource(CFRunLoopGetMain(), source, .commonModes)
+        CGEvent.tapEnable(tap: tap, enable: true)
+        eventTap = tap
+        eventTapSource = source
+        model.statusText = "快捷鍵已就緒：⌥D 解釋，⌥⇧D 翻譯。"
+        return true
+    }
+
+    private func startTapUpgrade() {
+        tapUpgradeTask = Task { [weak self] in
+            while let self, self.eventTap == nil {
+                try? await Task.sleep(for: .seconds(2))
+                guard !Task.isCancelled else { return }
+                self.model.refreshAccessibilityStatus()
+                if self.installEventTap() {
+                    self.unregisterHotKeys()
+                    return
+                }
+            }
+        }
+    }
+
+    private func unregisterHotKeys() {
+        for key in hotKeys { UnregisterEventHotKey(key) }
+        hotKeys.removeAll()
+        if let handler { RemoveEventHandler(handler) }
+        handler = nil
+    }
+
     private func registerHotKeys() {
         var type = EventTypeSpec(eventClass: OSType(kEventClassKeyboard), eventKind: UInt32(kEventHotKeyPressed))
         let callback: EventHandlerUPP = { _, event, userData -> OSStatus in
@@ -53,7 +134,7 @@ import SwiftUI
             let status = GetEventParameter(event, EventParamName(kEventParamDirectObject), EventParamType(typeEventHotKeyID), nil, MemoryLayout<EventHotKeyID>.size, nil, &hotKeyID)
             guard status == noErr else { return status }
             let owner = Unmanaged<AppDelegate>.fromOpaque(userData).takeUnretainedValue()
-            MainActor.assumeIsolated { owner.handleHotKey(hotKeyID.id) }
+            MainActor.assumeIsolated { owner.handleHotKey(hotKeyID.id == 2 ? .translate : .explain) }
             return noErr
         }
         let pointer = Unmanaged.passUnretained(self).toOpaque()
@@ -74,8 +155,7 @@ import SwiftUI
         }
     }
 
-    private func handleHotKey(_ id: UInt32) {
-        let mode: ExplainMode = id == 2 ? .translate : .explain
+    private func handleHotKey(_ mode: ExplainMode) {
         switch SelectionReader.read() {
         case .text(let selected):
             showPanel()
@@ -83,10 +163,10 @@ import SwiftUI
         case .noSelection:
             showPanel()
             model.mode = mode
-            model.statusText = "沒有讀到選取文字；可以在原文欄貼上後按「開始」。"
+            model.statusText = "沒有讀到選取文字；可以貼上文字後按「白話解釋」或「翻譯」。"
         case .permissionNeeded:
             showPanel()
-            model.statusText = "請先允許 Micky Explain 使用「輔助使用」，再重試。"
+            model.statusText = "請先允許 UTUVO Explain 使用「輔助使用」，再重試。"
             SelectionReader.requestPermission()
         }
     }
@@ -94,16 +174,23 @@ import SwiftUI
     private func showPanel() {
         if panel == nil {
             let window = NSPanel(
-                contentRect: NSRect(x: 0, y: 0, width: 480, height: 485),
+                contentRect: NSRect(x: 0, y: 0, width: 420, height: 360),
                 styleMask: [.titled, .closable, .fullSizeContentView],
                 backing: .buffered,
                 defer: false
             )
-            window.title = "Micky Explain"
+            window.title = "UTUVO Explain"
+            window.titleVisibility = .hidden
+            window.titlebarAppearsTransparent = true
             window.isFloatingPanel = true
             window.isReleasedWhenClosed = false
+            window.hidesOnDeactivate = true
             window.collectionBehavior = [.canJoinAllSpaces, .fullScreenAuxiliary]
-            window.contentView = NSHostingView(rootView: MainView(model: model, onSettings: { [weak self] in self?.showSettings() }))
+            window.contentView = NSHostingView(rootView: MainView(
+                model: model,
+                onSettings: { [weak self] in self?.showSettings() },
+                onPermission: { [weak self] in self?.requestAccessibility() }
+            ))
             panel = window
         }
         if let screen = NSScreen.screens.first(where: { $0.frame.contains(NSEvent.mouseLocation) }),
@@ -119,12 +206,12 @@ import SwiftUI
     private func showSettings() {
         if settingsWindow == nil {
             let window = NSWindow(
-                contentRect: NSRect(x: 0, y: 0, width: 510, height: 565),
+                contentRect: NSRect(x: 0, y: 0, width: 510, height: 380),
                 styleMask: [.titled, .closable, .miniaturizable],
                 backing: .buffered,
                 defer: false
             )
-            window.title = "Micky Explain 設定"
+            window.title = "UTUVO Explain 設定"
             window.isReleasedWhenClosed = false
             window.contentView = NSHostingView(rootView: SettingsView(model: model))
             window.center()
@@ -132,6 +219,12 @@ import SwiftUI
         }
         settingsWindow?.makeKeyAndOrderFront(nil)
         NSApp.activate(ignoringOtherApps: true)
+    }
+
+    private func requestAccessibility() {
+        SelectionReader.requestPermission()
+        model.refreshAccessibilityStatus()
+        model.statusText = "在系統設定允許 UTUVO Explain 使用「輔助使用」，回來後就能按 ⌥D。"
     }
 
     @objc private func openPanel() { showPanel() }

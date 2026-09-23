@@ -1,4 +1,4 @@
-name: MickyExplain
+name: UTUVOExplain
 options:
   bundleIdPrefix: com.mickyyang
   deploymentTarget:
@@ -12,14 +12,14 @@ settings:
     CODE_SIGN_STYLE: Manual
     DEVELOPMENT_TEAM: ""
 targets:
-  MickyExplain:
+  UTUVOExplain:
     type: application
     platform: macOS
     sources: [Sources]
     settings:
       base:
         PRODUCT_BUNDLE_IDENTIFIER: com.mickyyang.MickyExplain
-        PRODUCT_NAME: Micky Explain
+        PRODUCT_NAME: UTUVO Explain
         GENERATE_INFOPLIST_FILE: YES
         INFOPLIST_KEY_LSUIElement: YES
         MACOSX_DEPLOYMENT_TARGET: "14.0"
