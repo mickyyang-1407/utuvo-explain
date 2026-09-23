@@ -94,8 +94,10 @@ import SwiftUI
                     || CGEventSource.flagsState(.combinedSessionState).contains(.maskShift)
                     || CGEventSource.keyState(.hidSystemState, key: CGKeyCode(kVK_Shift))
                     || CGEventSource.keyState(.hidSystemState, key: CGKeyCode(kVK_RightShift))
-                MainActor.assumeIsolated {
-                    owner.handleHotKey(shiftDown ? .translate : .explain)
+                _ = MainActor.assumeIsolated {
+                    Task { [weak owner] in
+                        owner?.handleHotKey(shiftDown ? .translate : .explain)
+                    }
                 }
                 return nil
             },
@@ -165,24 +167,33 @@ import SwiftUI
         }
     }
 
+    private var selectionTask: Task<Void, Never>?
+
     private func handleHotKey(_ mode: ExplainMode) {
         let isAppFrontmost = NSWorkspace.shared.frontmostApplication?.processIdentifier == ProcessInfo.processInfo.processIdentifier
-        switch SelectionReader.read() {
-        case .text(let selection):
-            showPanel(near: selection.bounds)
-            model.prepare(selection.text, mode: mode)
-        case .noSelection:
-            showPanel()
-            if isAppFrontmost && !model.sourceText.isEmpty {
-                // The panel owns focus after the first shortcut. Reuse its text when the
-                // user switches modes with a second shortcut.
-                model.prepare(model.sourceText, mode: mode)
-            } else {
-                model.showNoSelection(mode: mode)
+        selectionTask?.cancel()
+        model.beginSelection(mode: mode)
+        selectionTask = Task { [weak self] in
+            guard let self else { return }
+            let selection = await SelectionReader.read(allowCopyFallback: !isAppFrontmost)
+            guard !Task.isCancelled else { return }
+            switch selection {
+            case .text(let selection):
+                self.showPanel(near: selection.bounds)
+                self.model.prepare(selection.text, mode: mode)
+            case .noSelection:
+                self.showPanel()
+                if isAppFrontmost && !self.model.sourceText.isEmpty {
+                    // The panel owns focus after the first shortcut. Reuse its text when
+                    // the user switches modes with a second shortcut.
+                    self.model.prepare(self.model.sourceText, mode: mode)
+                } else {
+                    self.model.showNoSelection(mode: mode)
+                }
+            case .permissionNeeded:
+                self.showPanel()
+                self.model.statusText = "請按「開啟系統設定」，允許 UTUVO Explain 後再重試。"
             }
-        case .permissionNeeded:
-            showPanel()
-            model.statusText = "請按「開啟系統設定」，允許 UTUVO Explain 後再重試。"
         }
     }
 

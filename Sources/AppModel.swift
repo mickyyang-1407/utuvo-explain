@@ -23,12 +23,22 @@ import Observation
         run()
     }
 
-    func showNoSelection(mode: ExplainMode) {
+    func beginSelection(mode: ExplainMode) {
         currentTask?.cancel()
         self.mode = mode
         resultText = ""
         isLoading = false
-        statusText = "沒有讀到選取文字；可以貼上文字後按「白話解釋」或「翻譯」。"
+        statusText = "正在讀取選字…"
+    }
+
+    func showNoSelection(mode: ExplainMode) {
+        currentTask?.cancel()
+        self.mode = mode
+        sourceText = ""
+        resultText = ""
+        isLoading = false
+        isEditingSource = false
+        statusText = "讀不到選取文字；請複製文字後貼到上方原文欄。"
     }
 
     func run() {
