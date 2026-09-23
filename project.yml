@@ -15,13 +15,14 @@ targets:
   UTUVOExplain:
     type: application
     platform: macOS
-    sources: [Sources]
+    sources: [Sources, Resources/Assets.xcassets]
     settings:
       base:
         PRODUCT_BUNDLE_IDENTIFIER: com.mickyyang.MickyExplain
         PRODUCT_NAME: UTUVO Explain
         GENERATE_INFOPLIST_FILE: YES
         INFOPLIST_KEY_LSUIElement: YES
+        ASSETCATALOG_COMPILER_APPICON_NAME: AppIcon
         MACOSX_DEPLOYMENT_TARGET: "14.0"
         ENABLE_APP_SANDBOX: NO
         CODE_SIGNING_ALLOWED: YES

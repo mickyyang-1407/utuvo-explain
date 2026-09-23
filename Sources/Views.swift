@@ -9,13 +9,18 @@ struct MainView: View {
     var body: some View {
         VStack(alignment: .leading, spacing: 12) {
             HStack(spacing: 10) {
-                Image(systemName: "text.book.closed.fill")
-                    .font(.system(size: 14, weight: .semibold))
-                    .foregroundStyle(.white)
-                    .frame(width: 30, height: 30)
-                    .background(Color.accentColor, in: RoundedRectangle(cornerRadius: 8))
-                Text("UTUVO Explain")
-                    .font(.headline)
+                Image(nsImage: NSWorkspace.shared.icon(forFile: Bundle.main.bundlePath))
+                    .resizable()
+                    .interpolation(.high)
+                    .frame(width: 34, height: 34)
+                    .accessibilityHidden(true)
+                VStack(alignment: .leading, spacing: 1) {
+                    Text("UTUVO Explain")
+                        .font(.headline)
+                    Text("貓貓翻譯家")
+                        .font(.caption2)
+                        .foregroundStyle(.secondary)
+                }
                 Spacer()
                 Button(action: onSettings) {
                     Image(systemName: "gearshape")

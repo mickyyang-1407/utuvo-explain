@@ -39,16 +39,25 @@ import SwiftUI
 
     private func setupMenu() {
         let item = NSStatusBar.system.statusItem(withLength: NSStatusItem.squareLength)
-        item.button?.image = NSImage(systemSymbolName: "text.book.closed", accessibilityDescription: "UTUVO Explain")
+        // Drop uses the same quiet cat mark in the menu bar; keep the family consistent.
+        item.button?.image = NSImage(systemSymbolName: "cat.fill", accessibilityDescription: "UTUVO Explain・貓貓翻譯家")
+        item.button?.toolTip = "UTUVO Explain・貓貓翻譯家"
         let menu = NSMenu()
-        let open = NSMenuItem(title: "開啟 UTUVO Explain", action: #selector(openPanel), keyEquivalent: "")
+        let title = NSMenuItem(title: "UTUVO Explain・貓貓翻譯家", action: nil, keyEquivalent: "")
+        title.isEnabled = false
+        menu.addItem(title)
+        menu.addItem(.separator())
+        let open = NSMenuItem(title: "開啟視窗", action: #selector(openPanel), keyEquivalent: "")
         open.target = self
         menu.addItem(open)
         let settings = NSMenuItem(title: "設定…", action: #selector(openSettings), keyEquivalent: "")
         settings.target = self
         menu.addItem(settings)
+        let shortcuts = NSMenuItem(title: "白話解釋 ⌥D  ·  翻譯 ⌥⇧D", action: nil, keyEquivalent: "")
+        shortcuts.isEnabled = false
+        menu.addItem(shortcuts)
         menu.addItem(.separator())
-        let quit = NSMenuItem(title: "結束", action: #selector(quitApp), keyEquivalent: "")
+        let quit = NSMenuItem(title: "結束 UTUVO Explain", action: #selector(quitApp), keyEquivalent: "")
         quit.target = self
         menu.addItem(quit)
         item.menu = menu
