@@ -14,7 +14,7 @@ import SwiftUI
     }
 }
 
-@MainActor final class AppDelegate: NSObject, NSApplicationDelegate {
+@MainActor final class AppDelegate: NSObject, NSApplicationDelegate, NSWindowDelegate {
     private let model = AppModel()
     private var statusItem: NSStatusItem?
     private var panel: NSPanel?
@@ -30,7 +30,7 @@ import SwiftUI
         if !installEventTap() {
             registerHotKeys()
             if !AXIsProcessTrusted() {
-                model.statusText = "尚未取得輔助使用權限；請在系統設定允許 UTUVO Explain。"
+                model.statusText = "請在系統設定的「裝置控制和資料取用」開啟 UTUVO Explain。"
             }
             startTapUpgrade()
         }
@@ -91,7 +91,7 @@ import SwiftUI
             },
             userInfo: pointer
         ) else {
-            model.statusText = "快捷鍵尚未就緒。請確認「輔助使用」權限，並重新開啟 App。"
+            model.statusText = "快捷鍵尚未就緒。請確認系統權限，並重新開啟 App。"
             return false
         }
         guard let source = CFMachPortCreateRunLoopSource(kCFAllocatorDefault, tap, 0) else {
@@ -166,7 +166,7 @@ import SwiftUI
             model.statusText = "沒有讀到選取文字；可以貼上文字後按「白話解釋」或「翻譯」。"
         case .permissionNeeded:
             showPanel()
-            model.statusText = "請先允許 UTUVO Explain 使用「輔助使用」，再重試。"
+            model.statusText = "請先在系統設定允許 UTUVO Explain，再重試。"
             SelectionReader.requestPermission()
         }
     }
@@ -213,6 +213,7 @@ import SwiftUI
             )
             window.title = "UTUVO Explain 設定"
             window.isReleasedWhenClosed = false
+            window.delegate = self
             window.contentView = NSHostingView(rootView: SettingsView(model: model))
             window.center()
             settingsWindow = window
@@ -224,7 +225,13 @@ import SwiftUI
     private func requestAccessibility() {
         SelectionReader.requestPermission()
         model.refreshAccessibilityStatus()
-        model.statusText = "在系統設定允許 UTUVO Explain 使用「輔助使用」，回來後就能按 ⌥D。"
+        model.statusText = "在「裝置控制和資料取用」開啟 UTUVO Explain，回來後就能按 ⌥D。"
+    }
+
+    func windowWillClose(_ notification: Notification) {
+        guard let closedWindow = notification.object as? NSWindow,
+              closedWindow === settingsWindow else { return }
+        showPanel()
     }
 
     @objc private func openPanel() { showPanel() }
