@@ -162,9 +162,9 @@ import SwiftUI
 
     private func handleHotKey(_ mode: ExplainMode) {
         switch SelectionReader.read() {
-        case .text(let selected):
-            showPanel()
-            model.prepare(selected, mode: mode)
+        case .text(let selection):
+            showPanel(near: selection.bounds)
+            model.prepare(selection.text, mode: mode)
         case .noSelection:
             showPanel()
             model.mode = mode
@@ -177,7 +177,7 @@ import SwiftUI
         }
     }
 
-    private func showPanel() {
+    private func showPanel(near selectionBounds: CGRect? = nil) {
         if panel == nil {
             let window = NSPanel(
                 contentRect: NSRect(x: 0, y: 0, width: 420, height: 360),
@@ -199,14 +199,59 @@ import SwiftUI
             ))
             panel = window
         }
-        if let screen = NSScreen.screens.first(where: { $0.frame.contains(NSEvent.mouseLocation) }),
-           let panel {
-            let x = min(NSEvent.mouseLocation.x + 18, screen.visibleFrame.maxX - panel.frame.width)
-            let y = max(NSEvent.mouseLocation.y - panel.frame.height - 12, screen.visibleFrame.minY)
-            panel.setFrameOrigin(NSPoint(x: max(x, screen.visibleFrame.minX), y: y))
+        if let panel {
+            if let selectionBounds,
+               let (anchor, screen) = appKitBounds(for: selectionBounds) {
+                panel.setFrameOrigin(panelOrigin(near: anchor, on: screen, size: panel.frame.size))
+            } else if let screen = NSScreen.screens.first(where: { $0.frame.contains(NSEvent.mouseLocation) }) {
+                let x = min(NSEvent.mouseLocation.x + 18, screen.visibleFrame.maxX - panel.frame.width)
+                let y = max(NSEvent.mouseLocation.y - panel.frame.height - 12, screen.visibleFrame.minY)
+                panel.setFrameOrigin(NSPoint(x: max(x, screen.visibleFrame.minX), y: y))
+            }
         }
         panel?.makeKeyAndOrderFront(nil)
         NSApp.activate(ignoringOtherApps: true)
+    }
+
+    private func appKitBounds(for accessibilityBounds: CGRect) -> (CGRect, NSScreen)? {
+        let selectionCenter = CGPoint(x: accessibilityBounds.midX, y: accessibilityBounds.midY)
+        for screen in NSScreen.screens {
+            guard let displayNumber = screen.deviceDescription[NSDeviceDescriptionKey("NSScreenNumber")] as? NSNumber else {
+                continue
+            }
+            let displayBounds = CGDisplayBounds(CGDirectDisplayID(displayNumber.uint32Value))
+            guard displayBounds.contains(selectionCenter),
+                  displayBounds.width > 0, displayBounds.height > 0 else { continue }
+            let scaleX = screen.frame.width / displayBounds.width
+            let scaleY = screen.frame.height / displayBounds.height
+            let localX = (accessibilityBounds.minX - displayBounds.minX) * scaleX
+            let localY = (accessibilityBounds.minY - displayBounds.minY) * scaleY
+            let bounds = CGRect(
+                x: screen.frame.minX + localX,
+                y: screen.frame.maxY - localY - accessibilityBounds.height * scaleY,
+                width: accessibilityBounds.width * scaleX,
+                height: accessibilityBounds.height * scaleY
+            )
+            return (bounds, screen)
+        }
+        return nil
+    }
+
+    private func panelOrigin(near anchor: CGRect, on screen: NSScreen, size: CGSize) -> NSPoint {
+        let visible = screen.visibleFrame
+        let gap: CGFloat = 12
+        let x = min(max(anchor.minX, visible.minX), visible.maxX - size.width)
+        let below = anchor.minY - gap - size.height
+        let above = anchor.maxY + gap
+        let y: CGFloat
+        if below >= visible.minY {
+            y = below
+        } else if above + size.height <= visible.maxY {
+            y = above
+        } else {
+            y = min(max(below, visible.minY), visible.maxY - size.height)
+        }
+        return NSPoint(x: x, y: y)
     }
 
     private func showSettings() {
