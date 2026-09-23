@@ -84,6 +84,11 @@ import SwiftUI
                       !flags.contains(.maskControl) else {
                     return Unmanaged.passUnretained(event)
                 }
+                // One physical press can produce repeat events after the panel takes focus.
+                // Consume those events without running a second selection lookup.
+                if event.getIntegerValueField(.keyboardEventAutorepeat) != 0 {
+                    return nil
+                }
                 MainActor.assumeIsolated {
                     owner.handleHotKey(flags.contains(.maskShift) ? .translate : .explain)
                 }
@@ -163,7 +168,9 @@ import SwiftUI
         case .noSelection:
             showPanel()
             model.mode = mode
-            model.statusText = "沒有讀到選取文字；可以貼上文字後按「白話解釋」或「翻譯」。"
+            if model.sourceText.isEmpty && model.resultText.isEmpty {
+                model.statusText = "沒有讀到選取文字；可以貼上文字後按「白話解釋」或「翻譯」。"
+            }
         case .permissionNeeded:
             showPanel()
             model.statusText = "請按「開啟系統設定」，允許 UTUVO Explain 後再重試。"
