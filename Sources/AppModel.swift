@@ -46,6 +46,7 @@ import Observation
             statusText = "先到設定貼上 Gemini API Key。"
             return
         }
+        isEditingSource = false
         currentTask?.cancel()
         resultText = ""
         isLoading = true

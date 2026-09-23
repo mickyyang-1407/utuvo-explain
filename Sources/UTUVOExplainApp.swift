@@ -111,7 +111,7 @@ import SwiftUI
         CGEvent.tapEnable(tap: tap, enable: true)
         eventTap = tap
         eventTapSource = source
-        model.statusText = "快捷鍵已就緒：⌥D 解釋，⌥⇧D 翻譯。"
+        model.statusText = "準備就緒"
         return true
     }
 
@@ -189,7 +189,7 @@ import SwiftUI
     private func showPanel(near selectionBounds: CGRect? = nil) {
         if panel == nil {
             let window = NSPanel(
-                contentRect: NSRect(x: 0, y: 0, width: 420, height: 360),
+                contentRect: NSRect(x: 0, y: 0, width: 420, height: 400),
                 styleMask: [.titled, .closable, .fullSizeContentView],
                 backing: .buffered,
                 defer: false

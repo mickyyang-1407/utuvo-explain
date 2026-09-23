@@ -10,76 +10,94 @@ struct MainView: View {
         VStack(alignment: .leading, spacing: 12) {
             HStack(spacing: 10) {
                 Image(systemName: "text.book.closed.fill")
-                    .font(.title3)
-                    .foregroundStyle(.tint)
-                Text("UTUVO Explain").font(.headline)
+                    .font(.system(size: 14, weight: .semibold))
+                    .foregroundStyle(.white)
+                    .frame(width: 30, height: 30)
+                    .background(Color.accentColor, in: RoundedRectangle(cornerRadius: 8))
+                Text("UTUVO Explain")
+                    .font(.headline)
                 Spacer()
                 Button(action: onSettings) {
                     Image(systemName: "gearshape")
+                        .frame(width: 28, height: 28)
+                        .background(.quaternary.opacity(0.4), in: Circle())
                 }
+                .buttonStyle(.plain)
+                .foregroundStyle(.secondary)
                 .help("設定 Gemini API Key 與提示詞")
             }
 
-            if model.isEditingSource {
-                TextEditor(text: $model.sourceText)
-                    .font(.body)
-                    .scrollContentBackground(.hidden)
-                    .padding(8)
-                    .frame(height: 75)
-                    .background(.quaternary.opacity(0.35), in: RoundedRectangle(cornerRadius: 10))
-            } else if model.sourceText.isEmpty {
-                VStack(alignment: .leading, spacing: 8) {
-                    Text("選取文字，按 ⌥D")
-                        .font(.title3.weight(.semibold))
-                    Text("想直接翻譯，就按 ⌥⇧D。")
+            VStack(alignment: .leading, spacing: 8) {
+                HStack {
+                    Text("原文")
+                        .font(.caption.weight(.semibold))
                         .foregroundStyle(.secondary)
-                    Button("或在這裡貼上文字") { model.isEditingSource = true }
+                    Spacer()
+                    if !model.sourceText.isEmpty && !model.isEditingSource {
+                        Button("編輯") { model.isEditingSource = true }
+                            .buttonStyle(.plain)
+                            .font(.caption)
+                            .foregroundStyle(.tint)
+                    }
                 }
-                .frame(maxWidth: .infinity, minHeight: 75, alignment: .leading)
-            } else {
-                HStack(alignment: .top) {
+                if model.isEditingSource {
+                    TextEditor(text: $model.sourceText)
+                        .font(.body)
+                        .scrollContentBackground(.hidden)
+                        .frame(height: 58)
+                } else if model.sourceText.isEmpty {
+                    HStack(spacing: 4) {
+                        Text("選取文字後按快捷鍵，")
+                            .foregroundStyle(.secondary)
+                        Button("或在這裡貼上") { model.isEditingSource = true }
+                            .buttonStyle(.plain)
+                            .foregroundStyle(.tint)
+                    }
+                    .font(.subheadline)
+                } else {
                     Text(model.sourceText)
                         .lineLimit(2)
                         .frame(maxWidth: .infinity, alignment: .leading)
-                    Button("編輯") { model.isEditingSource = true }
-                        .font(.caption)
                 }
-                .padding(10)
-                .frame(maxWidth: .infinity, minHeight: 75, alignment: .topLeading)
-                .background(.quaternary.opacity(0.35), in: RoundedRectangle(cornerRadius: 10))
             }
+            .padding(12)
+            .frame(maxWidth: .infinity, minHeight: 88, alignment: .topLeading)
+            .background(.quaternary.opacity(0.35), in: RoundedRectangle(cornerRadius: 12))
 
             HStack(spacing: 8) {
-                Button("白話解釋") {
-                    model.mode = .explain
-                    model.run()
-                }
-                .buttonStyle(.borderedProminent)
-                Button("翻譯") {
-                    model.mode = .translate
-                    model.run()
-                }
-                .buttonStyle(.bordered)
-                Spacer()
-                if !model.resultText.isEmpty {
-                    Button("複製結果") { model.copyResult() }
-                }
+                modeButton(.explain, shortcut: "⌥D")
+                modeButton(.translate, shortcut: "⌥⇧D")
             }
             .disabled(model.sourceText.trimmingCharacters(in: .whitespacesAndNewlines).isEmpty)
 
-            Divider()
-
-            Text(model.mode.rawValue)
-                .font(.caption.weight(.semibold))
-                .foregroundStyle(.secondary)
-
-            ScrollView {
-                Text(model.resultText.isEmpty ? (model.isLoading ? "Gemini 正在處理…" : "結果會顯示在這裡") : model.resultText)
-                    .foregroundStyle(model.resultText.isEmpty ? .secondary : .primary)
-                    .textSelection(.enabled)
-                    .frame(maxWidth: .infinity, alignment: .leading)
+            VStack(alignment: .leading, spacing: 10) {
+                HStack {
+                    Text(model.mode.rawValue)
+                        .font(.subheadline.weight(.semibold))
+                    Spacer()
+                    if !model.resultText.isEmpty {
+                        Button {
+                            model.copyResult()
+                        } label: {
+                            Label("複製", systemImage: "doc.on.doc")
+                        }
+                        .buttonStyle(.plain)
+                        .font(.caption)
+                        .foregroundStyle(.secondary)
+                    }
+                }
+                ScrollView {
+                    Text(model.resultText.isEmpty ? (model.isLoading ? "Gemini 正在處理…" : "結果會顯示在這裡") : model.resultText)
+                        .foregroundStyle(model.resultText.isEmpty ? .secondary : .primary)
+                        .textSelection(.enabled)
+                        .frame(maxWidth: .infinity, alignment: .leading)
+                }
+                .frame(maxWidth: .infinity, maxHeight: .infinity)
             }
-            .frame(maxWidth: .infinity, maxHeight: .infinity)
+            .padding(12)
+            .frame(maxWidth: .infinity, maxHeight: .infinity, alignment: .topLeading)
+            .background(Color(nsColor: .controlBackgroundColor), in: RoundedRectangle(cornerRadius: 12))
+            .overlay(RoundedRectangle(cornerRadius: 12).strokeBorder(.quaternary.opacity(0.6)))
 
             HStack(spacing: 8) {
                 if model.isLoading { ProgressView().controlSize(.small) }
@@ -98,7 +116,31 @@ struct MainView: View {
             }
         }
         .padding(16)
-        .frame(width: 420, height: 360)
+        .frame(width: 420, height: 400)
+    }
+
+    private func modeButton(_ mode: ExplainMode, shortcut: String) -> some View {
+        Button {
+            model.mode = mode
+            model.run()
+        } label: {
+            HStack {
+                Text(mode.rawValue)
+                    .font(.subheadline.weight(.semibold))
+                Spacer(minLength: 4)
+                Text(shortcut)
+                    .font(.caption.monospaced())
+                    .foregroundStyle(.secondary)
+            }
+            .padding(.horizontal, 12)
+            .frame(height: 42)
+            .frame(maxWidth: .infinity)
+            .background(model.mode == mode ? Color.accentColor.opacity(0.12) : Color.primary.opacity(0.04),
+                        in: RoundedRectangle(cornerRadius: 10))
+            .overlay(RoundedRectangle(cornerRadius: 10)
+                .strokeBorder(model.mode == mode ? Color.accentColor.opacity(0.65) : Color.clear))
+        }
+        .buttonStyle(.plain)
     }
 }
 
