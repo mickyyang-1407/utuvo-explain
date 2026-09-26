@@ -3,7 +3,7 @@ set -euo pipefail
 cd "${0:A:h:h}"
 
 images=(docs/assets/*.webp(N))
-(( ${#images} == 8 )) || { print -u2 'Expected eight optimized WebP images.'; exit 1; }
+(( ${#images} == 9 )) || { print -u2 'Expected nine optimized WebP images.'; exit 1; }
 total=0
 for image in "${images[@]}"; do
   size=$(stat -f %z "$image")

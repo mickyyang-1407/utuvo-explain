@@ -1,0 +1,16 @@
+[
+ {"id": "intro", "kind": "title", "title": "貓貓翻譯家", "caption": "選字或框選螢幕，看懂一段外文",
+  "vo": "這是 UTUVO Explain，貓貓翻譯家。在 Mac 上選字，或是框選螢幕，就能看懂一段外文。接下來一分半鐘，帶你從設定到上手。"},
+ {"id": "setup", "kind": "setup", "title": "第一次使用", "caption": "貼上自己的 Gemini API Key",
+  "vo": "第一次使用，先到設定，貼上自己的 Gemini API Key。Key 可以在 Google AI Studio 免費申請，會安全地存在 Mac 的鑰匙圈。第一次按快捷鍵時，請允許「裝置控制和資料取用」。"},
+ {"id": "select", "kind": "select", "key": "⌥D", "title": "選字，按 ⌥D", "caption": "白話解釋這段在講什麼",
+  "vo": "在網頁或任何 App 裡，選取一段看不懂的文字，按 Option D。小視窗會出現在旁邊，用台灣繁體中文，白話解釋這段在講什麼。"},
+ {"id": "translate", "kind": "translate", "key": "⌥⇧D", "title": "只要譯文，按 ⌥⇧D", "caption": "英文翻中文，中文翻英文",
+  "vo": "如果只想看譯文，就按 Option Shift D。外文會翻成繁體中文，中文會翻成英文。在視窗裡也能直接切換解釋和翻譯，或一鍵複製。"},
+ {"id": "frame", "kind": "frame", "key": "⌥S", "title": "選不到的字，按 ⌥S 框起來", "caption": "影片字幕、截圖、掃描 PDF 都可以",
+  "vo": "影片字幕、截圖、掃描的 PDF，選不到字怎麼辦？按 Option S，出現十字指標，拖曳框住那段字。放開滑鼠，小視窗馬上出現，先辨識文字，再幫你解釋。按 Option Shift S，就直接翻譯。"},
+ {"id": "privacy", "kind": "privacy", "title": "辨識在你的 Mac 上完成", "caption": "畫面不上傳，只送出辨識出的文字",
+  "vo": "文字辨識在你的 Mac 上完成，框選的畫面用完就刪除，只有辨識出的文字會送給 Gemini。第一次框選時，請允許「螢幕與系統錄音」，開啟後重新啟動 App。"},
+ {"id": "outro", "kind": "title", "title": "UTUVO Explain", "caption": "免費・開源・macOS 14 以上",
+  "vo": "UTUVO Explain 免費、開源。到官網下載，看不懂的句子，就交給貓貓翻譯家。"}
+]

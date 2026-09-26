@@ -1,0 +1,298 @@
+{
+ "fps": 30,
+ "frames": 2844,
+ "scenes": [
+  {
+   "id": "intro",
+   "kind": "title",
+   "title": "貓貓翻譯家",
+   "caption": "選字或框選螢幕，看懂一段外文",
+   "start": 0,
+   "frames": 360,
+   "voFrom": 18,
+   "vo": "vo/intro.wav",
+   "subs": [
+    {
+     "text": "這是 UTUVO Explain",
+     "from": 18,
+     "to": 101
+    },
+    {
+     "text": "貓貓翻譯家",
+     "from": 101,
+     "to": 127
+    },
+    {
+     "text": "在 Mac 上選字，或是框選螢幕",
+     "from": 127,
+     "to": 209
+    },
+    {
+     "text": "就能看懂一段外文",
+     "from": 209,
+     "to": 250
+    },
+    {
+     "text": "接下來一分半鐘，帶你從設定到上手",
+     "from": 250,
+     "to": 330
+    }
+   ]
+  },
+  {
+   "id": "setup",
+   "kind": "setup",
+   "title": "第一次使用",
+   "caption": "貼上自己的 Gemini API Key",
+   "start": 360,
+   "frames": 494,
+   "voFrom": 18,
+   "vo": "vo/setup.wav",
+   "subs": [
+    {
+     "text": "第一次使用，先到設定",
+     "from": 18,
+     "to": 65
+    },
+    {
+     "text": "貼上自己的 Gemini API Key",
+     "from": 65,
+     "to": 158
+    },
+    {
+     "text": "Key 可以在 Google AI Studio 免費申請",
+     "from": 158,
+     "to": 291
+    },
+    {
+     "text": "會安全地存在 Mac 的鑰匙圈",
+     "from": 291,
+     "to": 359
+    },
+    {
+     "text": "第一次按快捷鍵時",
+     "from": 359,
+     "to": 398
+    },
+    {
+     "text": "請允許「裝置控制和資料取用」",
+     "from": 398,
+     "to": 464
+    }
+   ]
+  },
+  {
+   "id": "select",
+   "kind": "select",
+   "key": "⌥D",
+   "title": "選字，按 ⌥D",
+   "caption": "白話解釋這段在講什麼",
+   "start": 854,
+   "frames": 372,
+   "voFrom": 18,
+   "vo": "vo/select.wav",
+   "subs": [
+    {
+     "text": "在網頁或任何 App 裡",
+     "from": 18,
+     "to": 84
+    },
+    {
+     "text": "選取一段看不懂的文字",
+     "from": 84,
+     "to": 140
+    },
+    {
+     "text": "按 Option D",
+     "from": 140,
+     "to": 195
+    },
+    {
+     "text": "小視窗會出現在旁邊",
+     "from": 195,
+     "to": 246
+    },
+    {
+     "text": "用台灣繁體中文",
+     "from": 246,
+     "to": 286
+    },
+    {
+     "text": "白話解釋這段在講什麼",
+     "from": 286,
+     "to": 342
+    }
+   ]
+  },
+  {
+   "id": "translate",
+   "kind": "translate",
+   "key": "⌥⇧D",
+   "title": "只要譯文，按 ⌥⇧D",
+   "caption": "英文翻中文，中文翻英文",
+   "start": 1226,
+   "frames": 425,
+   "voFrom": 18,
+   "vo": "vo/translate.wav",
+   "subs": [
+    {
+     "text": "如果只想看譯文",
+     "from": 18,
+     "to": 61
+    },
+    {
+     "text": "就按 Option Shift D",
+     "from": 61,
+     "to": 166
+    },
+    {
+     "text": "外文會翻成繁體中文",
+     "from": 166,
+     "to": 224
+    },
+    {
+     "text": "中文會翻成英文",
+     "from": 224,
+     "to": 269
+    },
+    {
+     "text": "在視窗裡也能直接切換解釋和翻譯",
+     "from": 269,
+     "to": 363
+    },
+    {
+     "text": "或一鍵複製",
+     "from": 363,
+     "to": 395
+    }
+   ]
+  },
+  {
+   "id": "frame",
+   "kind": "frame",
+   "key": "⌥S",
+   "title": "選不到的字，按 ⌥S 框起來",
+   "caption": "影片字幕、截圖、掃描 PDF 都可以",
+   "start": 1651,
+   "frames": 538,
+   "voFrom": 18,
+   "vo": "vo/frame.wav",
+   "subs": [
+    {
+     "text": "影片字幕、截圖、掃描的 PDF",
+     "from": 18,
+     "to": 96
+    },
+    {
+     "text": "選不到字怎麼辦？",
+     "from": 96,
+     "to": 138
+    },
+    {
+     "text": "按 Option S",
+     "from": 138,
+     "to": 192
+    },
+    {
+     "text": "出現十字指標，拖曳框住那段字",
+     "from": 192,
+     "to": 268
+    },
+    {
+     "text": "放開滑鼠，小視窗馬上出現",
+     "from": 268,
+     "to": 333
+    },
+    {
+     "text": "先辨識文字，再幫你解釋",
+     "from": 333,
+     "to": 393
+    },
+    {
+     "text": "按 Option Shift S",
+     "from": 393,
+     "to": 480
+    },
+    {
+     "text": "就直接翻譯",
+     "from": 480,
+     "to": 508
+    }
+   ]
+  },
+  {
+   "id": "privacy",
+   "kind": "privacy",
+   "title": "辨識在你的 Mac 上完成",
+   "caption": "畫面不上傳，只送出辨識出的文字",
+   "start": 2189,
+   "frames": 408,
+   "voFrom": 18,
+   "vo": "vo/privacy.wav",
+   "subs": [
+    {
+     "text": "文字辨識在你的 Mac 上完成",
+     "from": 18,
+     "to": 92
+    },
+    {
+     "text": "框選的畫面用完就刪除",
+     "from": 92,
+     "to": 141
+    },
+    {
+     "text": "只有辨識出的文字會送給 Gemini",
+     "from": 141,
+     "to": 230
+    },
+    {
+     "text": "第一次框選時",
+     "from": 230,
+     "to": 261
+    },
+    {
+     "text": "請允許「螢幕與系統錄音」",
+     "from": 261,
+     "to": 322
+    },
+    {
+     "text": "開啟後重新啟動 App",
+     "from": 322,
+     "to": 378
+    }
+   ]
+  },
+  {
+   "id": "outro",
+   "kind": "title",
+   "title": "UTUVO Explain",
+   "caption": "免費・開源・macOS 14 以上",
+   "start": 2597,
+   "frames": 247,
+   "voFrom": 18,
+   "vo": "vo/outro.wav",
+   "subs": [
+    {
+     "text": "UTUVO Explain 免費",
+     "from": 18,
+     "to": 102
+    },
+    {
+     "text": "開源",
+     "from": 102,
+     "to": 113
+    },
+    {
+     "text": "到官網下載，看不懂的句子",
+     "from": 113,
+     "to": 175
+    },
+    {
+     "text": "就交給貓貓翻譯家",
+     "from": 175,
+     "to": 217
+    }
+   ]
+  }
+ ]
+}

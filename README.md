@@ -23,6 +23,8 @@
 | --- | --- |
 | <img src="docs/assets/step-frame.webp" width="420" alt="在影片視窗上框選英文字幕的示意圖"> | <img src="docs/assets/step-explain.webp" width="420" alt="字幕旁邊出現 UTUVO Explain 視窗，顯示白話解釋"> |
 
+**教學影片**（1 分 35 秒）：[官網觀看](https://mickyyang-1407.github.io/utuvo-explain/#screen)。
+
 App 內建四頁「使用教學」，第一次開啟會自動出現，之後可從選單列的「使用教學…」再打開。
 
 框選時可按空白鍵改選整個視窗，按 Esc 取消。文字辨識在 Mac 本機完成，只把辨識出的文字送給 Gemini；框選的畫面辨識完就刪除，不會上傳。辨識結果會顯示在原文欄，有錯字可以按「編輯」修正後再送一次。
