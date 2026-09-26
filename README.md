@@ -23,7 +23,7 @@
 | --- | --- |
 | <img src="docs/assets/step-frame.webp" width="420" alt="在影片視窗上框選英文字幕的示意圖"> | <img src="docs/assets/step-explain.webp" width="420" alt="字幕旁邊出現 UTUVO Explain 視窗，顯示白話解釋"> |
 
-**教學影片**（1 分 35 秒）：[官網觀看](https://mickyyang-1407.github.io/utuvo-explain/#screen)。
+**教學影片**（1 分 37 秒）：[官網觀看](https://mickyyang-1407.github.io/utuvo-explain/#screen)。
 
 App 內建四頁「使用教學」，第一次開啟會自動出現，之後可從選單列的「使用教學…」再打開。
 

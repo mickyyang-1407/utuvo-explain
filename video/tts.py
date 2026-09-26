@@ -24,8 +24,18 @@ def wav_ms(wav):
                                               "-of", "csv=p=0", str(wav)], capture_output=True, text=True).stdout))
 
 
+# Spoken forms for TTS only; subtitles keep the brand spelling.
+SAY = {"UTUVO": "U-Tu-Vo"}
+
+
+def spoken(text):
+    for k, v in SAY.items():
+        text = text.replace(k, v)
+    return text
+
+
 def synthesize(text, wav):
-    body = {"model": "qwen-audio-3.0-tts-plus", "input": {"text": text, "voice": "longanlufeng"}}
+    body = {"model": "qwen-audio-3.0-tts-plus", "input": {"text": spoken(text), "voice": "longanlufeng"}}
     req = urllib.request.Request(
         "https://token-plan.cn-beijing.maas.aliyuncs.com/api/v1/services/audio/tts/SpeechSynthesizer",
         data=json.dumps(body).encode(), method="POST",
@@ -50,10 +60,12 @@ def synthesize(text, wav):
 manifest = {}
 for scene in json.loads((root / "script.json").read_text()):
     wav, meta = out / f"{scene['id']}.wav", out / f"{scene['id']}.json"
-    if wav.exists() and meta.exists() and json.loads(meta.read_text())["vo"] == scene["vo"]:
+    cached = json.loads(meta.read_text()) if meta.exists() else {}
+    if wav.exists() and cached.get("vo") == scene["vo"] and cached.get("said") == spoken(scene["vo"]):
         manifest[scene["id"]] = json.loads(meta.read_text())
         continue
     m = synthesize(scene["vo"], wav)
+    m["said"] = spoken(scene["vo"])
     meta.write_text(json.dumps(m, ensure_ascii=False, indent=1))
     manifest[scene["id"]] = m
     print(f"{scene['id']:10} {m['ms'] / 1000:5.1f}s  {m['chars']} chars", flush=True)

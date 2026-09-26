@@ -1,6 +1,6 @@
 {
  "fps": 30,
- "frames": 2844,
+ "frames": 2913,
  "scenes": [
   {
    "id": "intro",
@@ -8,34 +8,34 @@
    "title": "貓貓翻譯家",
    "caption": "選字或框選螢幕，看懂一段外文",
    "start": 0,
-   "frames": 360,
+   "frames": 386,
    "voFrom": 18,
    "vo": "vo/intro.wav",
    "subs": [
     {
      "text": "這是 UTUVO Explain",
      "from": 18,
-     "to": 101
+     "to": 108
     },
     {
      "text": "貓貓翻譯家",
-     "from": 101,
-     "to": 127
+     "from": 108,
+     "to": 136
     },
     {
      "text": "在 Mac 上選字，或是框選螢幕",
-     "from": 127,
-     "to": 209
+     "from": 136,
+     "to": 225
     },
     {
      "text": "就能看懂一段外文",
-     "from": 209,
-     "to": 250
+     "from": 225,
+     "to": 269
     },
     {
      "text": "接下來一分半鐘，帶你從設定到上手",
-     "from": 250,
-     "to": 330
+     "from": 269,
+     "to": 356
     }
    ]
   },
@@ -44,7 +44,7 @@
    "kind": "setup",
    "title": "第一次使用",
    "caption": "貼上自己的 Gemini API Key",
-   "start": 360,
+   "start": 386,
    "frames": 494,
    "voFrom": 18,
    "vo": "vo/setup.wav",
@@ -87,40 +87,40 @@
    "key": "⌥D",
    "title": "選字，按 ⌥D",
    "caption": "白話解釋這段在講什麼",
-   "start": 854,
-   "frames": 372,
+   "start": 880,
+   "frames": 384,
    "voFrom": 18,
    "vo": "vo/select.wav",
    "subs": [
     {
      "text": "在網頁或任何 App 裡",
      "from": 18,
-     "to": 84
+     "to": 87
     },
     {
      "text": "選取一段看不懂的文字",
-     "from": 84,
-     "to": 140
+     "from": 87,
+     "to": 144
     },
     {
      "text": "按 Option D",
-     "from": 140,
-     "to": 195
+     "from": 144,
+     "to": 202
     },
     {
      "text": "小視窗會出現在旁邊",
-     "from": 195,
-     "to": 246
+     "from": 202,
+     "to": 254
     },
     {
      "text": "用台灣繁體中文",
-     "from": 246,
-     "to": 286
+     "from": 254,
+     "to": 295
     },
     {
      "text": "白話解釋這段在講什麼",
-     "from": 286,
-     "to": 342
+     "from": 295,
+     "to": 354
     }
    ]
   },
@@ -130,7 +130,7 @@
    "key": "⌥⇧D",
    "title": "只要譯文，按 ⌥⇧D",
    "caption": "英文翻中文，中文翻英文",
-   "start": 1226,
+   "start": 1264,
    "frames": 425,
    "voFrom": 18,
    "vo": "vo/translate.wav",
@@ -173,50 +173,50 @@
    "key": "⌥S",
    "title": "選不到的字，按 ⌥S 框起來",
    "caption": "影片字幕、截圖、掃描 PDF 都可以",
-   "start": 1651,
-   "frames": 538,
+   "start": 1689,
+   "frames": 554,
    "voFrom": 18,
    "vo": "vo/frame.wav",
    "subs": [
     {
      "text": "影片字幕、截圖、掃描的 PDF",
      "from": 18,
-     "to": 96
+     "to": 99
     },
     {
      "text": "選不到字怎麼辦？",
-     "from": 96,
-     "to": 138
+     "from": 99,
+     "to": 142
     },
     {
      "text": "按 Option S",
-     "from": 138,
-     "to": 192
+     "from": 142,
+     "to": 198
     },
     {
      "text": "出現十字指標，拖曳框住那段字",
-     "from": 192,
-     "to": 268
+     "from": 198,
+     "to": 276
     },
     {
      "text": "放開滑鼠，小視窗馬上出現",
-     "from": 268,
-     "to": 333
+     "from": 276,
+     "to": 344
     },
     {
      "text": "先辨識文字，再幫你解釋",
-     "from": 333,
-     "to": 393
+     "from": 344,
+     "to": 406
     },
     {
      "text": "按 Option Shift S",
-     "from": 393,
-     "to": 480
+     "from": 406,
+     "to": 496
     },
     {
      "text": "就直接翻譯",
-     "from": 480,
-     "to": 508
+     "from": 496,
+     "to": 524
     }
    ]
   },
@@ -225,7 +225,7 @@
    "kind": "privacy",
    "title": "辨識在你的 Mac 上完成",
    "caption": "畫面不上傳，只送出辨識出的文字",
-   "start": 2189,
+   "start": 2243,
    "frames": 408,
    "voFrom": 18,
    "vo": "vo/privacy.wav",
@@ -267,30 +267,30 @@
    "kind": "title",
    "title": "UTUVO Explain",
    "caption": "免費・開源・macOS 14 以上",
-   "start": 2597,
-   "frames": 247,
+   "start": 2651,
+   "frames": 262,
    "voFrom": 18,
    "vo": "vo/outro.wav",
    "subs": [
     {
      "text": "UTUVO Explain 免費",
      "from": 18,
-     "to": 102
+     "to": 108
     },
     {
      "text": "開源",
-     "from": 102,
-     "to": 113
+     "from": 108,
+     "to": 120
     },
     {
      "text": "到官網下載，看不懂的句子",
-     "from": 113,
-     "to": 175
+     "from": 120,
+     "to": 187
     },
     {
      "text": "就交給貓貓翻譯家",
-     "from": 175,
-     "to": 217
+     "from": 187,
+     "to": 232
     }
    ]
   }

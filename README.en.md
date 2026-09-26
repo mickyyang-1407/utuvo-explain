@@ -23,7 +23,7 @@
 | --- | --- |
 | <img src="docs/assets/step-frame.webp" width="420" alt="Illustration of framing an English subtitle in a video window"> | <img src="docs/assets/step-explain.webp" width="420" alt="UTUVO Explain window next to the video, explaining the subtitle"> |
 
-**Tutorial video** (1:35, Chinese narration): [watch on the site](https://mickyyang-1407.github.io/utuvo-explain/en.html#screen).
+**Tutorial video** (1:37, Chinese narration): [watch on the site](https://mickyyang-1407.github.io/utuvo-explain/en.html#screen).
 
 A four-page tutorial opens on first launch and stays available from the menu bar (使用教學…).
 

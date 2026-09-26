@@ -12,6 +12,8 @@ const FONT = "'PingFang TC', 'Heiti TC', system-ui, sans-serif";
 const ease = Easing.bezier(0.16, 1, 0.3, 1);
 const steps = timeline.scenes.filter((s) => s.kind !== "title");
 const clamp = { extrapolateLeft: "clamp", extrapolateRight: "clamp" } as const;
+/** 9:16 renders use the stacked layout; 16:9 keeps the side-by-side one. */
+const useVertical = () => { const { width, height } = useVideoConfig(); return height > width; };
 const at = (frame: number, a: number, b: number) => interpolate(frame, [a, b], [0, 1], { ...clamp, easing: ease });
 
 /** Progress bar across the top of the whole video. */
@@ -25,33 +27,35 @@ const Progress: React.FC = () => {
 
 const Subtitles: React.FC<{ scene: Scene }> = ({ scene }) => {
   const frame = useCurrentFrame();
+  const v = useVertical();
   const sub = scene.subs.find((s) => frame >= s.from && frame < s.to + 6);
   if (!sub) return null;
   const opacity = interpolate(frame, [sub.from, sub.from + 5], [0, 1], clamp);
   return (
-    <div style={{ position: "absolute", left: 0, right: 0, bottom: 72, display: "flex", justifyContent: "center", opacity }}>
+    <div style={{ position: "absolute", left: 40, right: 40, bottom: v ? 110 : 72, display: "flex", justifyContent: "center", opacity }}>
       <div style={{ background: "rgba(10,8,16,0.82)", border: `1px solid ${C.stroke}`, borderRadius: 18, padding: "12px 28px",
-        color: C.text, fontSize: 40, lineHeight: 1.35, fontWeight: 600, fontFamily: FONT }}>{sub.text}</div>
+        color: C.text, fontSize: v ? 46 : 40, lineHeight: 1.35, fontWeight: 600, fontFamily: FONT, textAlign: "center" }}>{sub.text}</div>
     </div>
   );
 };
 
 const Heading: React.FC<{ scene: Scene }> = ({ scene }) => {
   const frame = useCurrentFrame();
+  const v = useVertical();
   const step = steps.findIndex((s) => s.id === scene.id) + 1;
   const a = at(frame, 0, 18), b = at(frame, 6, 26);
   return (
-    <div style={{ position: "absolute", top: 70, left: 110, fontFamily: FONT }}>
+    <div style={{ position: "absolute", top: v ? 120 : 70, left: v ? 70 : 110, right: v ? 70 : undefined, fontFamily: FONT }}>
       <div style={{ display: "flex", alignItems: "center", gap: 16, opacity: a, transform: `translateX(${(1 - a) * -40}px)` }}>
         <div style={{ fontSize: 22, fontWeight: 800, color: "#fff", background: C.violet, borderRadius: 8, padding: "4px 12px" }}>
           {String(step).padStart(2, "0")}
         </div>
         <div style={{ fontSize: 22, letterSpacing: 5, color: C.dim, fontWeight: 700 }}>STEP {step} / {steps.length}</div>
       </div>
-      <div style={{ marginTop: 16, fontSize: 64, fontWeight: 800, color: C.text, opacity: a, transform: `translateY(${(1 - a) * 24}px)` }}>
+      <div style={{ marginTop: 16, fontSize: v ? 70 : 64, lineHeight: 1.2, fontWeight: 800, color: C.text, opacity: a, transform: `translateY(${(1 - a) * 24}px)` }}>
         {scene.title}
       </div>
-      <div style={{ marginTop: 6, fontSize: 32, fontWeight: 500, color: C.orange, opacity: b }}>{scene.caption}</div>
+      <div style={{ marginTop: 10, fontSize: v ? 36 : 32, fontWeight: 500, color: C.orange, opacity: b }}>{scene.caption}</div>
     </div>
   );
 };
@@ -96,10 +100,11 @@ const SENTENCE = "Lossless streaming preserves every bit of the original master,
 /** A plain demo web page with the sentence being selected. */
 const Article: React.FC<{ select: [number, number] }> = ({ select }) => {
   const frame = useCurrentFrame();
+  const v = useVertical();
   const p = at(frame, select[0], select[1]);
   const enter = at(frame, 0, 20);
   return (
-    <div style={{ position: "absolute", left: 110, top: 290, width: 1000, height: 470, borderRadius: 18, overflow: "hidden",
+    <div style={{ position: "absolute", left: v ? 70 : 110, top: v ? 440 : 290, width: v ? 940 : 1000, height: 470, borderRadius: 18, overflow: "hidden",
       background: "#FBF8F3", boxShadow: "0 30px 80px rgba(0,0,0,0.5)", opacity: enter, transform: `translateY(${(1 - enter) * 30}px)`,
       fontFamily: "Georgia, 'Times New Roman', serif" }}>
       <div style={{ height: 46, background: "#E9E4DC", display: "flex", alignItems: "center", gap: 10, padding: "0 18px" }}>
@@ -124,6 +129,7 @@ const Article: React.FC<{ select: [number, number] }> = ({ select }) => {
 /** The demo video frame with the crosshair dragging a box around the subtitle. */
 const Framing: React.FC<{ drag: [number, number] }> = ({ drag }) => {
   const frame = useCurrentFrame();
+  const v = useVertical();
   const W = 1000, s = W / 1920, H = Math.round(1144 * s);
   const enter = at(frame, 0, 20);
   const box = { x: 280 * s, y: 890 * s, w: 1360 * s, h: 160 * s };
@@ -133,7 +139,7 @@ const Framing: React.FC<{ drag: [number, number] }> = ({ drag }) => {
   const cy = interpolate(moving, [0, 1], [box.y - 160, box.y]) + box.h * p;
   const showCross = frame >= drag[0] - 24 && frame < drag[1] + 12;
   return (
-    <div style={{ position: "absolute", left: 110, top: 300, width: W, height: H, opacity: enter,
+    <div style={{ position: "absolute", left: v ? 40 : 110, top: v ? 450 : 300, width: W, height: H, opacity: enter,
       transform: `translateY(${(1 - enter) * 30}px)`, filter: "drop-shadow(0 30px 70px rgba(0,0,0,0.6))" }}>
       <Img src={staticFile("frame.png")} style={{ width: W, height: H, borderRadius: 12 }} />
       {frame >= drag[0] && frame < drag[1] + 12 && (
@@ -160,8 +166,9 @@ const Shot: React.FC<{ src: string; from: number; x: number; y: number; w: numbe
 
 const Bullets: React.FC<{ items: string[]; from: number }> = ({ items, from }) => {
   const frame = useCurrentFrame();
+  const v = useVertical();
   return (
-    <div style={{ position: "absolute", left: 110, top: 330, display: "flex", flexDirection: "column", gap: 26, fontFamily: FONT }}>
+    <div style={{ position: "absolute", left: v ? 70 : 110, top: v ? 430 : 330, display: "flex", flexDirection: "column", gap: 26, fontFamily: FONT }}>
       {items.map((t, i) => {
         const a = at(frame, from + i * 40, from + i * 40 + 18);
         return (
@@ -199,34 +206,36 @@ const TitleCard: React.FC<{ scene: Scene; outro?: boolean }> = ({ scene, outro }
 /** Scene layouts. Timings are fractions of the scene so they follow the narration length. */
 const Stage: React.FC<{ scene: Scene }> = ({ scene }) => {
   const f = (x: number) => Math.round(scene.frames * x);
+  const v = useVertical();
+  const P = v ? { x: 190, y: 950, w: 700 } : { x: 1200, y: 250, w: 560 };
   switch (scene.kind) {
     case "setup":
       return (<>
-        <Shot src="settings.png" from={f(0.04)} x={110} y={300} w={680} ratio={824 / 1020} />
-        <Shot src="tutorial-1.png" from={f(0.55)} x={1000} y={200} w={560} ratio={1304 / 1120} />
+        <Shot src="settings.png" from={f(0.04)} x={v ? 90 : 110} y={v ? 440 : 300} w={v ? 900 : 680} ratio={824 / 1020} />
+        <Shot src="tutorial-1.png" from={f(0.55)} x={v ? 280 : 1000} y={v ? 980 : 200} w={v ? 520 : 560} ratio={1304 / 1120} />
       </>);
     case "select":
       return (<>
         <Article select={[f(0.14), f(0.34)]} />
-        <KeyCap label="⌥D" from={f(0.38)} x={880} y={200} />
-        <Panel loading="art-explain-loading.png" done="art-explain-done.png" from={f(0.46)} doneAt={f(0.6)} x={1200} y={250} />
+        <KeyCap label="⌥D" from={f(0.38)} x={v ? 780 : 880} y={v ? 850 : 200} />
+        <Panel loading="art-explain-loading.png" done="art-explain-done.png" from={f(0.46)} doneAt={f(0.6)} x={P.x} y={P.y} w={P.w} />
       </>);
     case "translate":
       return (<>
         <Article select={[-20, -10]} />
-        <KeyCap label="⌥⇧D" from={f(0.12)} x={820} y={200} />
-        <Panel loading="art-translate-loading.png" done="art-translate-done.png" from={f(0.2)} doneAt={f(0.34)} x={1200} y={250} />
+        <KeyCap label="⌥⇧D" from={f(0.12)} x={v ? 700 : 820} y={v ? 850 : 200} />
+        <Panel loading="art-translate-loading.png" done="art-translate-done.png" from={f(0.2)} doneAt={f(0.34)} x={P.x} y={P.y} w={P.w} />
       </>);
     case "frame":
       return (<>
         <Framing drag={[f(0.3), f(0.44)]} />
-        <KeyCap label="⌥S" from={f(0.2)} x={980} y={200} />
-        <Panel loading="sub-explain-loading.png" done="sub-explain-done.png" from={f(0.5)} doneAt={f(0.66)} x={1220} y={250} />
+        <KeyCap label="⌥S" from={f(0.2)} x={v ? 800 : 980} y={v ? 350 : 200} />
+        <Panel loading="sub-explain-loading.png" done="sub-explain-done.png" from={f(0.5)} doneAt={f(0.66)} x={v ? 210 : P.x} y={v ? 1000 : P.y} w={v ? 660 : P.w} />
       </>);
     case "privacy":
       return (<>
         <Bullets items={["文字辨識在 Mac 本機完成", "框選的畫面用完就刪除", "只把辨識出的文字送給 Gemini", "第一次框選：允許螢幕錄製"]} from={f(0.05)} />
-        <Shot src="tutorial-4.png" from={f(0.1)} x={1180} y={180} w={560} ratio={1304 / 1120} />
+        <Shot src="tutorial-4.png" from={f(0.1)} x={v ? 250 : 1180} y={v ? 780 : 180} w={v ? 580 : 560} ratio={1304 / 1120} />
       </>);
     default:
       return null;
@@ -252,7 +261,7 @@ export const Tutorial: React.FC = () => (
       <Sequence key={s.id} from={s.start} durationInFrames={s.frames}><SceneView scene={s as Scene} /></Sequence>
     ))}
     <Progress />
-    <div style={{ position: "absolute", bottom: 22, width: "100%", textAlign: "center", fontFamily: FONT, fontSize: 20, color: "#6E6780" }}>
+    <div style={{ position: "absolute", bottom: 22, left: 30, right: 30, textAlign: "center", fontFamily: FONT, fontSize: 20, color: "#6E6780" }}>
       旁白為 AI 語音生成・App 視窗為實際截圖，選字與框選動作為示意
     </div>
   </AbsoluteFill>
