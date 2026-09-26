@@ -9,9 +9,19 @@ cd tutorial
 npx remotion still Cover out/UTUVO-Explain-教學-封面-9x16.png --log=error
 for comp name in Tutorial UTUVO-Explain-教學-16x9.mp4 TutorialVertical UTUVO-Explain-教學-9x16.mp4; do
   npx remotion render $comp out/raw-$comp.mp4 --codec=h264 --crf=18 --audio-codec=aac --audio-bitrate=256k --log=error
-  m=$(ffmpeg -i out/raw-$comp.mp4 -af loudnorm=I=-14:TP=-1.5:LRA=11:print_format=json -f null - 2>&1 | sed -n '/{/,/}/p')
+  # Suno bed (music/bed.wav): ducked under the narration (sidechain), 1 s fade in, 3 s fade out. Same as the Type tutorial.
+  if [[ -f ../music/bed.wav ]]; then
+    dur=$(ffprobe -v error -show_entries format=duration -of csv=p=0 out/raw-$comp.mp4)
+    ffmpeg -y -loglevel error -i out/raw-$comp.mp4 -i ../music/bed.wav -filter_complex \
+      "[1:a]atrim=0:$dur,afade=t=in:d=1,afade=t=out:st=$(( ${dur%.*} - 3 )):d=3,volume=0.4[bed];[0:a]asplit=2[vo][key];[bed][key]sidechaincompress=threshold=0.03:ratio=8:attack=20:release=400[duck];[vo][duck]amix=inputs=2:duration=first:normalize=0[a]" \
+      -map 0:v -map "[a]" -c:v copy -c:a pcm_s16le -ar 48000 out/mix-$comp.mov
+    mv out/mix-$comp.mov out/raw-$comp.mov; src=out/raw-$comp.mov
+  else
+    src=out/raw-$comp.mp4
+  fi
+  m=$(ffmpeg -i $src -af loudnorm=I=-14:TP=-1.5:LRA=11:print_format=json -f null - 2>&1 | sed -n '/{/,/}/p')
   a=(${=$(echo "$m" | python3 -c "import json,sys;d=json.load(sys.stdin);print(d['input_i'],d['input_tp'],d['input_lra'],d['input_thresh'],d['target_offset'])")})
-  ffmpeg -y -loglevel error -i out/raw-$comp.mp4 -c:v copy -movflags +faststart \
+  ffmpeg -y -loglevel error -i $src -c:v copy -movflags +faststart \
     -af "loudnorm=I=-14:TP=-1.5:LRA=11:measured_I=${a[1]}:measured_TP=${a[2]}:measured_LRA=${a[3]}:measured_thresh=${a[4]}:offset=${a[5]}:linear=true,aresample=48000" \
     -c:a aac -b:a 256k -ar 48000 out/$name
   echo "$name: $(ffmpeg -i out/$name -af ebur128=peak=true -f null - 2>&1 | grep -E '^\s+(I:|Peak:)' | tail -2 | tr -s ' ' | tr '\n' ' ') $(ffprobe -v error -show_entries format=duration -of csv=p=0 out/$name)s"

@@ -26,4 +26,4 @@ App 免費、開源，要自備免費的 Gemini API Key。1 分半的教學影�
 - [ ] 版本號仍是 0.2.0（有新版就改）
 - [ ] 下載連結打得開、GitHub Release 是 Latest
 - [ ] 影片旁白是 AI 語音（百鍊 Qwen），畫面角落已標示；公開發布的語音授權你確認過（見 MICKY-TODO）
-- [ ] 目前是無配樂版；要配樂等 Suno 曲子（見 MICKY-TODO）
+- [ ] 配樂是 Suno（你的帳號「UTUVO Explain Tutorial Bed」），發文前聽一次確認沒有人聲

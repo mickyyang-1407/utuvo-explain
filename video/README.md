@@ -7,4 +7,5 @@
 - `timeline.py` — scene lengths follow the narration; subtitles are split into one-line pieces.
 - `tutorial/` — Remotion project. Explain windows are real screenshots (`public/*-loading.png`, `*-done.png`);
   the text selection, keycaps and framing crosshair are animated on top. The video frame is a demo image.
+- Music: Suno bed at `music/bed.wav` (not committed), ducked under the narration.
 - Loudness is normalized to −14 LUFS / −1.5 dBTP.
