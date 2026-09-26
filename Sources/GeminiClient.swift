@@ -69,7 +69,7 @@ struct GeminiClient {
         request.setValue("application/json", forHTTPHeaderField: "Content-Type")
         request.setValue(key, forHTTPHeaderField: "x-goog-api-key")
         request.httpBody = try JSONEncoder().encode(payload)
-        request.timeoutInterval = 30
+        request.timeoutInterval = 60
 
         let (data, response) = try await URLSession.shared.data(for: request)
         let http = response as? HTTPURLResponse
@@ -80,6 +80,8 @@ struct GeminiClient {
         let output = decoded?.candidates?.first?.content?.parts.compactMap(\.text).joined()
             .trimmingCharacters(in: .whitespacesAndNewlines)
         guard let output, !output.isEmpty else { throw ClientError.emptyResponse }
-        return output
+        // Flash-Lite sometimes slips simplified characters (时间) into Taiwan
+        // Traditional Chinese output. Latin text passes through unchanged.
+        return output.applyingTransform(StringTransform("Hans-Hant"), reverse: false) ?? output
     }
 }

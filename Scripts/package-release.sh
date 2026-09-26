@@ -45,6 +45,8 @@ UTUVO Explain · 貓貓翻譯家
 把 UTUVO Explain 拖到 Applications，從「應用程式」啟動。
 首次開啟，在設定貼上自己的 Gemini API Key，並允許 macOS 的「裝置控制和資料取用」權限。
 選字後按 ⌥D 看白話解釋；按 ⌥⇧D 翻譯。也可以在視窗內手動貼字。
+圖片、影片裡的字：按 ⌥S 框選後解釋，⌥⇧S 框選後翻譯（第一次需允許「螢幕與系統錄音」）。
+第一次開啟會出現使用教學，之後可從選單列「使用教學…」再打開。
 
 Requires macOS 14+ and Apple Silicon. A personal Gemini API key and internet connection are required.
 TXT

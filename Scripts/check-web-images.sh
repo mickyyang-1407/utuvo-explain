@@ -3,7 +3,7 @@ set -euo pipefail
 cd "${0:A:h:h}"
 
 images=(docs/assets/*.webp(N))
-(( ${#images} == 4 )) || { print -u2 'Expected four optimized WebP images.'; exit 1; }
+(( ${#images} == 8 )) || { print -u2 'Expected eight optimized WebP images.'; exit 1; }
 total=0
 for image in "${images[@]}"; do
   size=$(stat -f %z "$image")
@@ -11,7 +11,7 @@ for image in "${images[@]}"; do
   total=$((total + size))
   print "$image: $size bytes"
 done
-(( total <= 350000 )) || { print -u2 "Web image budget exceeded: $total bytes"; exit 1; }
+(( total <= 600000 )) || { print -u2 "Web image budget exceeded: $total bytes"; exit 1; }
 if rg -n 'docs/assets/[^" ]+\.png|assets/[^" ]+\.png' README.md README.en.md docs/*.html; then
   print -u2 'README or site references a PNG image instead of optimized WebP.'
   exit 1

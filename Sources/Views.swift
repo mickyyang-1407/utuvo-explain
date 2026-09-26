@@ -5,6 +5,8 @@ struct MainView: View {
     @Bindable var model: AppModel
     let onSettings: () -> Void
     let onPermission: () -> Void
+    let onCapture: () -> Void
+    let onScreenPermission: () -> Void
 
     var body: some View {
         VStack(alignment: .leading, spacing: 12) {
@@ -38,6 +40,13 @@ struct MainView: View {
                         .font(.caption.weight(.semibold))
                         .foregroundStyle(.secondary)
                     Spacer()
+                    Button(action: onCapture) {
+                        Label("框選螢幕", systemImage: "text.viewfinder")
+                    }
+                    .buttonStyle(.plain)
+                    .font(.caption)
+                    .foregroundStyle(.tint)
+                    .help("框選圖片、影片或 PDF 裡的文字（⌥S 解釋、⌥⇧S 翻譯）")
                     if !model.sourceText.isEmpty && !model.isEditingSource {
                         Button("編輯") { model.isEditingSource = true }
                             .buttonStyle(.plain)
@@ -111,7 +120,10 @@ struct MainView: View {
                     .foregroundStyle(model.statusText == "完成" ? .secondary : .primary)
                     .lineLimit(2)
                 Spacer()
-                if !model.hasAccessibility {
+                if model.needsScreenRecording {
+                    Button("開啟螢幕錄製設定", action: onScreenPermission)
+                        .font(.caption)
+                } else if !model.hasAccessibility {
                     Button("開啟系統設定", action: onPermission)
                         .font(.caption)
                 } else if !model.hasKey {

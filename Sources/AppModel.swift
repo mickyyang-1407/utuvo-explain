@@ -6,17 +6,19 @@ import Observation
 @MainActor @Observable final class AppModel {
     var sourceText = ""
     var resultText = ""
-    var statusText = "選取文字後按 ⌥D，就能看白話解釋。"
+    var statusText = "選取文字後按 ⌥D；圖片或影片裡的字按 ⌥S 框選。"
     var mode: ExplainMode = .explain
     var isLoading = false
     var isEditingSource = false
     var hasKey = KeychainStore.read() != nil
     var hasAccessibility = AXIsProcessTrusted()
+    var needsScreenRecording = false
 
     @ObservationIgnored private var currentTask: Task<Void, Never>?
 
     func prepare(_ text: String, mode: ExplainMode) {
         self.mode = mode
+        needsScreenRecording = false
         sourceText = text
         resultText = ""
         isEditingSource = false
@@ -29,6 +31,26 @@ import Observation
         resultText = ""
         isLoading = false
         statusText = "正在讀取選字…"
+    }
+
+    func beginScreenCapture(mode: ExplainMode) {
+        currentTask?.cancel()
+        self.mode = mode
+        isLoading = false
+        statusText = "拖曳框選要辨識的範圍；按空白鍵可改選視窗，Esc 取消。"
+    }
+
+    func beginRecognizing() {
+        sourceText = ""
+        resultText = ""
+        isEditingSource = false
+        isLoading = true
+        statusText = "正在辨識框選範圍裡的文字…"
+    }
+
+    func endScreenCapture(status: String) {
+        isLoading = false
+        statusText = status
     }
 
     func showNoSelection(mode: ExplainMode) {
@@ -70,6 +92,12 @@ import Observation
                 statusText = "完成"
             } catch is CancellationError {
                 return
+            } catch let error as URLError where error.code == .timedOut {
+                guard !Task.isCancelled else { return }
+                statusText = "Gemini 太久沒回應，請再按一次；文字很長時可以框小一點。"
+            } catch let error as URLError where error.code == .notConnectedToInternet {
+                guard !Task.isCancelled else { return }
+                statusText = "目前沒有網路，連上後再按一次。"
             } catch {
                 guard !Task.isCancelled else { return }
                 statusText = error.localizedDescription

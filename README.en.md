@@ -14,6 +14,18 @@
 | --- | --- |
 | `⌥D` | A plain-language explanation in Taiwan Traditional Chinese, with essential context when useful |
 | `⌥⇧D` | Other languages to Taiwan Traditional Chinese; Chinese to English, with translation only |
+| `⌥S` | Drag over any part of the screen, recognize the text, then explain it (images, video subtitles, scanned PDFs) |
+| `⌥⇧S` | Drag over part of the screen and translate the text |
+
+### Framing the screen
+
+| ① Press `⌥S` and frame the subtitle | ② Release — the window appears |
+| --- | --- |
+| <img src="docs/assets/step-frame.webp" width="420" alt="Illustration of framing an English subtitle in a video window"> | <img src="docs/assets/step-explain.webp" width="420" alt="UTUVO Explain window next to the video, explaining the subtitle"> |
+
+A four-page tutorial opens on first launch and stays available from the menu bar (使用教學…).
+
+While framing, press Space to pick a whole window or Esc to cancel. Text recognition runs on your Mac; only the recognized text is sent to Gemini, and the captured image is deleted right after recognition. The recognized text appears in the source field, where you can fix typos before sending again.
 
 The compact window tries to appear near your selected text. You can also paste text manually, switch modes in the window, and copy the result. The app interface is currently in Traditional Chinese.
 
@@ -22,7 +34,8 @@ The compact window tries to appear near your selected text. You can also paste t
 1. Download `UTUVO-Explain-0.1.1-arm64.dmg` from [Releases](https://github.com/mickyyang-1407/utuvo-explain/releases/latest) and drag the app into Applications. The installer is Developer ID signed and Apple notarized.
 2. Launch UTUVO Explain and add your own [Gemini API key](https://aistudio.google.com/api-keys) in Settings. It stays in macOS Keychain.
 3. Allow UTUVO Explain under macOS “Device Control and Data Access” when prompted. The app uses this access to read the current selection and recognize global shortcuts; it does not record other keystrokes.
-4. Select text and press a shortcut, or paste text into the window.
+4. The first time you use `⌥S`, allow UTUVO Explain under “Screen & System Audio Recording”, then relaunch the app.
+5. Select text and press a shortcut, or paste text into the window.
 
 The app is free and MIT licensed. Google's free-tier limits, rate limits and data-use rules are set by Google; see its [official pricing and data-use page](https://ai.google.dev/gemini-api/docs/pricing). Selected text is sent to Google only when you trigger an action. Do not submit sensitive text that should not be shared with a third party. The app does not keep result history.
 

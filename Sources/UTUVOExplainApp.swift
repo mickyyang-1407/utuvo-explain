@@ -19,6 +19,7 @@ import SwiftUI
     private var statusItem: NSStatusItem?
     private var panel: NSPanel?
     private var settingsWindow: NSWindow?
+    private var tutorialWindow: NSWindow?
     private var hotKeys: [EventHotKeyRef] = []
     private var handler: EventHandlerRef?
     private var eventTap: CFMachPort?
@@ -27,6 +28,7 @@ import SwiftUI
 
     func applicationDidFinishLaunching(_ notification: Notification) {
         setupMenu()
+        ScreenTextReader.prewarm()
         if !installEventTap() {
             registerHotKeys()
             if !AXIsProcessTrusted() {
@@ -34,7 +36,11 @@ import SwiftUI
             }
             startTapUpgrade()
         }
-        showPanel()
+        if TutorialState.shouldShowOnLaunch {
+            showTutorial()
+        } else {
+            showPanel()
+        }
     }
 
     private func setupMenu() {
@@ -52,9 +58,18 @@ import SwiftUI
         let settings = NSMenuItem(title: "設定…", action: #selector(openSettings), keyEquivalent: "")
         settings.target = self
         menu.addItem(settings)
+        let tutorial = NSMenuItem(title: "使用教學…", action: #selector(openTutorial), keyEquivalent: "")
+        tutorial.target = self
+        menu.addItem(tutorial)
+        let capture = NSMenuItem(title: "框選螢幕文字…", action: #selector(captureScreen), keyEquivalent: "")
+        capture.target = self
+        menu.addItem(capture)
         let shortcuts = NSMenuItem(title: "白話解釋 ⌥D  ·  翻譯 ⌥⇧D", action: nil, keyEquivalent: "")
         shortcuts.isEnabled = false
         menu.addItem(shortcuts)
+        let screenShortcuts = NSMenuItem(title: "框選螢幕：解釋 ⌥S  ·  翻譯 ⌥⇧S", action: nil, keyEquivalent: "")
+        screenShortcuts.isEnabled = false
+        menu.addItem(screenShortcuts)
         menu.addItem(.separator())
         let quit = NSMenuItem(title: "結束 UTUVO Explain", action: #selector(quitApp), keyEquivalent: "")
         quit.target = self
@@ -82,8 +97,9 @@ import SwiftUI
                     }
                     return Unmanaged.passUnretained(event)
                 }
+                let keyCode = event.getIntegerValueField(.keyboardEventKeycode)
                 guard type == .keyDown,
-                      event.getIntegerValueField(.keyboardEventKeycode) == Int64(kVK_ANSI_D) else {
+                      keyCode == Int64(kVK_ANSI_D) || keyCode == Int64(kVK_ANSI_S) else {
                     return Unmanaged.passUnretained(event)
                 }
                 let flags = event.flags
@@ -102,9 +118,15 @@ import SwiftUI
                     || CGEventSource.flagsState(.combinedSessionState).contains(.maskShift)
                     || CGEventSource.keyState(.hidSystemState, key: CGKeyCode(kVK_Shift))
                     || CGEventSource.keyState(.hidSystemState, key: CGKeyCode(kVK_RightShift))
+                let fromScreen = keyCode == Int64(kVK_ANSI_S)
                 _ = MainActor.assumeIsolated {
                     Task { [weak owner] in
-                        owner?.handleHotKey(shiftDown ? .translate : .explain)
+                        let mode: ExplainMode = shiftDown ? .translate : .explain
+                        if fromScreen {
+                            owner?.handleScreenHotKey(mode)
+                        } else {
+                            owner?.handleHotKey(mode)
+                        }
                     }
                 }
                 return nil
@@ -154,23 +176,35 @@ import SwiftUI
             let status = GetEventParameter(event, EventParamName(kEventParamDirectObject), EventParamType(typeEventHotKeyID), nil, MemoryLayout<EventHotKeyID>.size, nil, &hotKeyID)
             guard status == noErr else { return status }
             let owner = Unmanaged<AppDelegate>.fromOpaque(userData).takeUnretainedValue()
-            MainActor.assumeIsolated { owner.handleHotKey(hotKeyID.id == 2 ? .translate : .explain) }
+            MainActor.assumeIsolated {
+                let mode: ExplainMode = hotKeyID.id % 2 == 0 ? .translate : .explain
+                if hotKeyID.id >= 3 {
+                    owner.handleScreenHotKey(mode)
+                } else {
+                    owner.handleHotKey(mode)
+                }
+            }
             return noErr
         }
         let pointer = Unmanaged.passUnretained(self).toOpaque()
         let handlerStatus = InstallEventHandler(GetApplicationEventTarget(), callback, 1, &type, pointer, &handler)
         var registrationResults: [String] = []
-        for (id, modifiers) in [(UInt32(1), UInt32(optionKey)), (UInt32(2), UInt32(optionKey | shiftKey))] {
+        // 1 ⌥D, 2 ⌥⇧D (selection); 3 ⌥S, 4 ⌥⇧S (screen region OCR).
+        let bindings: [(UInt32, Int, UInt32)] = [
+            (1, kVK_ANSI_D, UInt32(optionKey)), (2, kVK_ANSI_D, UInt32(optionKey | shiftKey)),
+            (3, kVK_ANSI_S, UInt32(optionKey)), (4, kVK_ANSI_S, UInt32(optionKey | shiftKey)),
+        ]
+        for (id, keyCode, modifiers) in bindings {
             var reference: EventHotKeyRef?
             let hotKeyID = EventHotKeyID(signature: OSType(0x4D455850), id: id)
-            let status = RegisterEventHotKey(UInt32(kVK_ANSI_D), modifiers, hotKeyID, GetApplicationEventTarget(), 0, &reference)
+            let status = RegisterEventHotKey(UInt32(keyCode), modifiers, hotKeyID, GetApplicationEventTarget(), 0, &reference)
             registrationResults.append("\(id):\(status)")
             if status == noErr,
                let reference {
                 hotKeys.append(reference)
             }
         }
-        if handlerStatus != noErr || hotKeys.count != 2 {
+        if handlerStatus != noErr || hotKeys.count != bindings.count {
             model.statusText = "快捷鍵無法啟用（\(handlerStatus), \(registrationResults.joined(separator: ", "))）。請先用手動輸入。"
         }
     }
@@ -205,7 +239,67 @@ import SwiftUI
         }
     }
 
-    private func showPanel(near selectionBounds: CGRect? = nil) {
+    private var isCapturingScreen = false
+    private var panelPlaced = false
+
+    private func handleScreenHotKey(_ mode: ExplainMode) {
+        // Only the framing step is exclusive: a second press while the system
+        // picker is open would stack a second picker. During recognition a new
+        // press starts over and the older result is dropped.
+        guard !isCapturingScreen else { return }
+        guard ScreenTextReader.hasPermission else {
+            // Nothing to frame yet: keep the panel where it is and explain why.
+            ScreenTextReader.requestPermission()
+            model.needsScreenRecording = true
+            showPanel(keepPosition: true)
+            model.endScreenCapture(status: "框選螢幕需要「螢幕與系統錄音」權限；開啟後重新啟動 App。")
+            return
+        }
+        selectionTask?.cancel()
+        isCapturingScreen = true
+        let panelWasVisible = panel?.isVisible == true
+        // Keep the panel out of the picture the user is about to frame.
+        panel?.orderOut(nil)
+        model.beginScreenCapture(mode: mode)
+        selectionTask = Task { [weak self] in
+            let result = await ScreenTextReader.captureAndRecognize(onCaptured: { [weak self] in
+                guard let self else { return }
+                self.isCapturingScreen = false
+                // Show progress right away; recognition can take a few seconds.
+                self.showPanel(keepPosition: panelWasVisible)
+                self.model.beginRecognizing()
+            })
+            guard let self else { return }
+            self.isCapturingScreen = false
+            guard !Task.isCancelled else { return }
+            // Return the panel to where it was instead of chasing the mouse.
+            switch result {
+            case .text(let text):
+                self.showPanel(keepPosition: panelWasVisible)
+                self.model.prepare(text, mode: mode)
+            case .cancelled:
+                self.model.endScreenCapture(status: "已取消框選。")
+                if panelWasVisible { self.showPanel(keepPosition: true) }
+            case .noText:
+                self.showPanel(keepPosition: panelWasVisible)
+                self.model.endScreenCapture(status: "框選範圍裡沒有辨識到文字，請框大一點再試。")
+            case .permissionNeeded:
+                self.model.needsScreenRecording = true
+                self.showPanel(keepPosition: panelWasVisible)
+                self.model.endScreenCapture(status: "框選螢幕需要「螢幕與系統錄音」權限；開啟後重新啟動 App。")
+            case .failed(let message):
+                self.showPanel(keepPosition: panelWasVisible)
+                self.model.endScreenCapture(status: message)
+            }
+        }
+    }
+
+    private func requestScreenRecording() {
+        let url = URL(string: "x-apple.systempreferences:com.apple.preference.security?Privacy_ScreenCapture")
+        if let url { NSWorkspace.shared.open(url) }
+    }
+
+    private func showPanel(near selectionBounds: CGRect? = nil, keepPosition: Bool = false) {
         if panel == nil {
             let window = NSPanel(
                 contentRect: NSRect(x: 0, y: 0, width: 420, height: 400),
@@ -223,11 +317,14 @@ import SwiftUI
             window.contentView = NSHostingView(rootView: MainView(
                 model: model,
                 onSettings: { [weak self] in self?.showSettings() },
-                onPermission: { [weak self] in self?.requestAccessibility() }
+                onPermission: { [weak self] in self?.requestAccessibility() },
+                onCapture: { [weak self] in self?.handleScreenHotKey(self?.model.mode ?? .explain) },
+                onScreenPermission: { [weak self] in self?.requestScreenRecording() }
             ))
             panel = window
         }
-        if let panel {
+        if let panel, !(keepPosition && panelPlaced) {
+            panelPlaced = true
             if let selectionBounds,
                let (anchor, screen) = appKitBounds(for: selectionBounds) {
                 panel.setFrameOrigin(panelOrigin(near: anchor, on: screen, size: panel.frame.size))
@@ -237,6 +334,9 @@ import SwiftUI
                 panel.setFrameOrigin(NSPoint(x: max(x, screen.visibleFrame.minX), y: y))
             }
         }
+        // After the system picker closes, macOS may refuse to activate this app;
+        // the panel still has to appear.
+        panel?.orderFrontRegardless()
         panel?.makeKeyAndOrderFront(nil)
         NSApp.activate(ignoringOtherApps: true)
     }
@@ -301,6 +401,32 @@ import SwiftUI
         NSApp.activate(ignoringOtherApps: true)
     }
 
+    private func showTutorial() {
+        if tutorialWindow == nil {
+            let window = NSWindow(
+                contentRect: NSRect(x: 0, y: 0, width: 560, height: 620),
+                styleMask: [.titled, .closable],
+                backing: .buffered,
+                defer: false
+            )
+            window.title = "UTUVO Explain 使用教學"
+            window.isReleasedWhenClosed = false
+            window.delegate = self
+            window.contentView = NSHostingView(rootView: TutorialView(
+                onSettings: { [weak self] in self?.showSettings() },
+                onScreenPermission: { [weak self] in
+                    ScreenTextReader.requestPermission()
+                    self?.requestScreenRecording()
+                },
+                onFinish: { [weak self] in self?.tutorialWindow?.close() }
+            ))
+            window.center()
+            tutorialWindow = window
+        }
+        tutorialWindow?.makeKeyAndOrderFront(nil)
+        NSApp.activate(ignoringOtherApps: true)
+    }
+
     private func requestAccessibility() {
         guard let settingsURL = URL(string: "x-apple.systempreferences:com.apple.preference.security?Privacy_Accessibility") else {
             model.statusText = "請在系統設定的「裝置控制和資料取用」開啟 UTUVO Explain。"
@@ -314,12 +440,18 @@ import SwiftUI
     }
 
     func windowWillClose(_ notification: Notification) {
-        guard let closedWindow = notification.object as? NSWindow,
-              closedWindow === settingsWindow else { return }
-        showPanel()
+        guard let closedWindow = notification.object as? NSWindow else { return }
+        if closedWindow === tutorialWindow {
+            TutorialState.markSeen()
+            showPanel()
+        } else if closedWindow === settingsWindow, tutorialWindow?.isVisible != true {
+            showPanel()
+        }
     }
 
     @objc private func openPanel() { showPanel() }
+    @objc private func openTutorial() { showTutorial() }
+    @objc private func captureScreen() { handleScreenHotKey(.explain) }
     @objc private func openSettings() { showSettings() }
     @objc private func quitApp() { NSApp.terminate(nil) }
 }

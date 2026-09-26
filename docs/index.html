@@ -21,16 +21,16 @@
 <body>
   <header class="top"><nav class="nav wrap" aria-label="主要導覽">
     <a class="brand" href="#top"><img src="assets/cat-160.webp" width="38" height="38" alt="">UTUVO / EXPLAIN</a>
-    <div class="navlinks"><a class="optional" href="#how">使用方式</a><a href="https://github.com/mickyyang-1407/utuvo-explain/releases/latest">下載</a><a class="optional" href="https://github.com/mickyyang-1407/utuvo-explain">GitHub ↗</a><a class="lang" href="en.html" lang="en">EN</a></div>
+    <div class="navlinks"><a class="optional" href="#how">使用方式</a><a class="optional" href="#screen">框選螢幕</a><a href="https://github.com/mickyyang-1407/utuvo-explain/releases/latest">下載</a><a class="optional" href="https://github.com/mickyyang-1407/utuvo-explain">GitHub ↗</a><a class="lang" href="en.html" lang="en">EN</a></div>
   </nav></header>
   <main id="top"><div class="wrap">
     <section class="hero" aria-labelledby="hero-title">
       <div class="hero-copy">
         <div class="kicker">UTUVO EXPLAIN · 貓貓翻譯家</div>
         <h1 id="hero-title">選字後，<br>翻譯或解釋。</h1>
-        <p class="lead">在 Mac 上選取文字，按 <strong>⌥D</strong> 看白話解釋，按 <strong>⌥⇧D</strong> 看翻譯。結果會顯示在選取文字附近。</p>
+        <p class="lead">在 Mac 上選取文字，按 <strong>⌥D</strong> 看白話解釋，按 <strong>⌥⇧D</strong> 看翻譯。圖片、影片裡選不到的字，按 <strong>⌥S</strong> 框起來也行。</p>
         <div class="actions"><a class="button" href="https://github.com/mickyyang-1407/utuvo-explain/releases/latest">免費下載 <span aria-hidden="true">↓</span></a><a class="link" href="https://github.com/mickyyang-1407/utuvo-explain">查看原始碼 ↗</a></div>
-        <p class="small">v0.1.1 · macOS 14 以上 · Apple Silicon<br>已通過 Apple 簽章與公證。需自備 Gemini API Key，並連接網路。</p>
+        <p class="small">v0.2.0 · macOS 14 以上 · Apple Silicon<br>已通過 Apple 簽章與公證。需自備 Gemini API Key，並連接網路。</p>
       </div>
       <figure class="hero-visual">
         <img class="hero-cat" src="assets/cat-512.webp" width="102" height="102" alt="UTUVO 系列橘白貓咪圖示" decoding="async">
@@ -38,7 +38,7 @@
         <figcaption>實際 App 畫面，使用示範文字</figcaption>
       </figure>
     </section>
-    <div class="facts" aria-label="產品摘要"><div><span>功能</span><strong>白話解釋、翻譯</strong></div><div><span>Mac 原生 App</span><strong>SwiftUI + AppKit</strong></div><div><span>費用與授權</span><strong>App 免費、MIT 開源</strong></div></div>
+    <div class="facts" aria-label="產品摘要"><div><span>功能</span><strong>白話解釋、翻譯、框選螢幕</strong></div><div><span>Mac 原生 App</span><strong>SwiftUI + AppKit</strong></div><div><span>費用與授權</span><strong>App 免費、MIT 開源</strong></div></div>
     <section id="how" class="section" aria-labelledby="how-title">
       <div class="section-head"><div><span class="eyebrow">01 / 使用方式</span><h2 id="how-title">選字，按快捷鍵，<br>看結果。</h2></div><p>在瀏覽器和其他 Mac App 都可以使用。如果某個 App 抓不到選字，手動貼到 Explain 視窗也可以。</p></div>
       <div class="workflow">
@@ -55,18 +55,29 @@
       <article class="mode"><span class="eyebrow">⌥⇧D</span><h3>翻譯</h3><p>英文等非中文內容翻成台灣繁體中文；中文內容翻成英文。畫面只顯示譯文。</p><img src="assets/translate-app.webp" width="1064" height="1088" loading="lazy" decoding="async" alt="翻譯模式的實際 App 畫面"></article>
     </div>
   </div></section>
+  <section id="screen" class="section wrap" aria-labelledby="screen-title">
+    <div class="section-head"><div><span class="eyebrow">03 / 框選螢幕（0.2 新增）</span><h2 id="screen-title">圖片、影片裡的字，<br>框起來就懂。</h2></div><p>字幕、截圖、掃描的 PDF 選不到字？按 <span class="key">⌥S</span> 框住那一塊，Explain 會在 Mac 本機辨識文字，再解釋或翻譯。</p></div>
+    <ol class="tutorial">
+      <li><div><span class="num">01</span><h3>按 ⌥S，框住字幕</h3><p>畫面出現十字指標，拖曳框住要看的字。按空白鍵可以改選整個視窗，按 Esc 取消。想直接看譯文就按 <span class="key">⌥⇧S</span>。</p></div><img src="assets/step-frame.webp" width="1600" height="1019" loading="lazy" decoding="async" alt="在影片視窗上框選一段英文字幕的示意圖"></li>
+      <li><div><span class="num">02</span><h3>放開滑鼠，小視窗馬上出現</h3><p>先顯示「正在辨識」，接著出現白話解釋。辨識出的原文會放在上方，有錯字可以按「編輯」修正後再送一次。</p></div><img src="assets/step-explain.webp" width="1600" height="934" loading="lazy" decoding="async" alt="影片字幕旁邊出現 UTUVO Explain 視窗，顯示字幕的白話解釋"></li>
+      <li><div><span class="num">03</span><h3>要譯文就切到翻譯</h3><p>同一段字可以在視窗裡切換「白話解釋」和「翻譯」，也可以一鍵複製結果。</p></div><img src="assets/step-translate.webp" width="1600" height="934" loading="lazy" decoding="async" alt="UTUVO Explain 視窗顯示同一段字幕的繁體中文翻譯"></li>
+      <li><div><span class="num">04</span><h3>第一次使用：允許螢幕錄製</h3><p>框選螢幕需要 macOS 的「螢幕與系統錄音」權限。第一次按 <span class="key">⌥S</span> 時系統會詢問，開啟後重新啟動 App。App 內也有「使用教學」，隨時可以從選單列打開。</p></div><img src="assets/tutorial-window.webp" width="1120" height="1304" loading="lazy" decoding="async" alt="UTUVO Explain 內建使用教學視窗的第三頁"></li>
+    </ol>
+    <p class="note">文字辨識在你的 Mac 上完成，框選的畫面辨識完就刪除；只有辨識出的文字會送給 Gemini。示意圖中的影片畫面為示範用。</p>
+  </section>
   <div class="wrap">
     <section class="section privacy" aria-labelledby="privacy-title">
-      <div><span class="eyebrow">03 / 開始使用</span><h2 id="privacy-title">填入自己的<br>Gemini API Key。</h2><p>UTUVO Explain 不需要另外註冊帳號。第一次使用時，在設定中貼上自己的 Gemini API Key。只有你按下快捷鍵或功能按鈕，App 才會把那段文字送給 Google 處理。</p></div>
-      <ul><li><strong>API Key 存在 Mac 鑰匙圈</strong>App 呼叫 Gemini 時，才會用這組 Key 驗證身分。</li><li><strong>第一次使用要開啟 Mac 權限</strong>這項權限用來讀取目前選取的文字，並接收全域快捷鍵。</li><li><strong>不儲存使用紀錄</strong>App 不會保存翻譯或解釋的歷史。送出前，請先確認文字是否適合交由 Gemini 處理。</li></ul>
+      <div><span class="eyebrow">04 / 開始使用</span><h2 id="privacy-title">填入自己的<br>Gemini API Key。</h2><p>UTUVO Explain 不需要另外註冊帳號。第一次使用時，在設定中貼上自己的 Gemini API Key。只有你按下快捷鍵或功能按鈕，App 才會把那段文字送給 Google 處理。</p></div>
+      <ul><li><strong>API Key 存在 Mac 鑰匙圈</strong>App 呼叫 Gemini 時，才會用這組 Key 驗證身分。</li><li><strong>第一次使用要開啟 Mac 權限</strong>這項權限用來讀取目前選取的文字，並接收全域快捷鍵。</li><li><strong>框選螢幕只在本機辨識</strong>截圖不上傳，辨識完就刪除；需要「螢幕與系統錄音」權限。</li><li><strong>不儲存使用紀錄</strong>App 不會保存翻譯或解釋的歷史。送出前，請先確認文字是否適合交由 Gemini 處理。</li></ul>
     </section>
     <section class="faq" aria-labelledby="faq-title"><span class="eyebrow">常見問題</span><h2 id="faq-title">下載前想知道的事</h2>
       <details><summary>需要付費嗎？</summary><p>App 免費，而且以 MIT 授權開源。你需要自己的 Gemini API Key；Google 的免費額度、使用限制和資料使用規則，請以 <a class="link" href="https://ai.google.dev/gemini-api/docs/pricing">Google 官方說明</a>為準。</p></details>
       <details><summary>為什麼要開啟 Mac 權限？</summary><p>App 需要讀取你目前選取的文字，並接收 ⌥D、⌥⇧D 快捷鍵。它不會記錄其他按鍵。如果某個 App 無法提供選字內容，你也可以手動貼上文字。</p></details>
+      <details><summary>框選螢幕會把畫面傳出去嗎？</summary><p>不會。框選的畫面在 Mac 本機用 Apple 的文字辨識讀出來，辨識完立刻刪除；只有辨識出的文字會在你按下後送給 Gemini。這個功能需要「螢幕與系統錄音」權限，只在你按 ⌥S 時使用。</p></details>
       <details><summary>哪些 Mac 可以安裝？</summary><p>目前提供 macOS 14 以上、Apple Silicon Mac 的安裝包。Intel Mac 尚未驗證。</p></details>
     </section>
     <section class="closing"><div><span class="eyebrow">UTUVO EXPLAIN</span><h2>下載貓貓翻譯家</h2><p>免費開源。安裝後填入自己的 Gemini API Key，就能開始使用。</p></div><a class="button" href="https://github.com/mickyyang-1407/utuvo-explain/releases/latest">下載 Mac 版 ↓</a></section>
   </div></main>
-  <footer class="footer wrap"><span>© 2026 UTUVO · Explain 0.1.1</span><div><a href="https://github.com/mickyyang-1407/utuvo-explain/blob/main/LICENSE">MIT</a><a href="https://github.com/mickyyang-1407/utuvo-explain/blob/main/README.md">使用說明</a><a href="en.html" lang="en">English</a></div></footer>
+  <footer class="footer wrap"><span>© 2026 UTUVO · Explain 0.2.0</span><div><a href="https://github.com/mickyyang-1407/utuvo-explain/blob/main/LICENSE">MIT</a><a href="https://github.com/mickyyang-1407/utuvo-explain/blob/main/README.md">使用說明</a><a href="en.html" lang="en">English</a></div></footer>
 </body>
 </html>
